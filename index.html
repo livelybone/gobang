@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>五子棋</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-size: 14px;
+      color: #666;
+      font-family: 'Microsoft YaHei', sans-serif;
+    }
+
+    #btn-group {
+      clear: both;
+      display: flex;
+      align-items: center;
+      padding: 20px 0 0;
+    }
+
+    #black, #white, #restart {
+      width: 80px;
+      height: 30px;
+      margin: 0 20px 0 0;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      opacity: .8;
+    }
+
+    #black:hover, #white:hover, #restart:hover {
+      opacity: 1;
+    }
+
+    #black {
+      background: #333;
+      color: #fff;
+    }
+
+    #white {
+      border: 1px solid #666;
+      background: #fff;
+      color: #333;
+    }
+
+    #restart {
+      background: #00c76f;
+      color: #fff;
+    }
+
+    #black {
+
+    }
+
+    #tip {
+      color: #999;
+    }
+  </style>
+  <script data-main="./js/main" src="./js/require.js"></script>
+</head>
+<body>
+
+<div id="gobang">
+</div>
+
+<div id="btn-group">
+  <button id="black">我执黑子</button>
+  <button id="white">我执白子</button>
+  <span id="tip">** 黑子先行 **</span>
+  <button id="restart" style="display:none">重新开始</button>
+</div>
+
+<!--<script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>-->
+<!--<script src="./js/jquery.min.js"></script>-->
+</body>
+</html>
