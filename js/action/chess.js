@@ -3,7 +3,7 @@
  */
 
 define(['component/chessboard', 'component/role', 'component/player', 'component/computer', 'component/pop-up', 'utils/win-dictionary'],
-  function (chessboard, role, Player, Computer, Popup, winDictionary) {
+  function (chessboard, role, Player, Computer, popup, winDictionary) {
     function Chess() {
       // 同步实现
 
@@ -14,7 +14,7 @@ define(['component/chessboard', 'component/role', 'component/player', 'component
 
       this.init = function () {
         chessboard.init();
-        Popup.init();
+        popup.init();
       };
 
       this.gameStart = function (roleBlack, roleWhite) {
@@ -29,10 +29,9 @@ define(['component/chessboard', 'component/role', 'component/player', 'component
           this.players.white = new Player(roleWhite.name, 'white');
           this.players.black = new Player(roleBlack.name, 'black');
         } else console.error('Two computer player is forbidden!');
-        console.log(this.players);
 
 
-        Popup.animation('Game start!', 1000, function () {
+        popup.animation('Game start!', 1000, function () {
           var currentPlayer = that.players[role.currentPlayer];
 
           if (currentPlayer.isComputer) {
@@ -53,7 +52,7 @@ define(['component/chessboard', 'component/role', 'component/player', 'component
 
       this.restart = function () {
         chessboard.init();
-        Popup.init();
+        popup.init();
         role.init();
         this.players = {};
       };
@@ -62,6 +61,7 @@ define(['component/chessboard', 'component/role', 'component/player', 'component
         var currentPlayer = that.players[role.currentPlayer];
         if (!currentPlayer.isComputer) {
           var toNext = currentPlayer.chess(ev);
+          that.removeClickFn();
           if (toNext) {
             var isGameOver = that.judge();
 
@@ -69,10 +69,15 @@ define(['component/chessboard', 'component/role', 'component/player', 'component
             currentPlayer = that.players[role.currentPlayer];
             if (!isGameOver && currentPlayer.isComputer) {
               setTimeout(function () {
-                currentPlayer.chess();
-                that.judge();
+                toNext = currentPlayer.chess();
+                if (toNext) {
+                  isGameOver = that.judge();
+                  if (!isGameOver) that.addClickFn();
+                }
               }, Math.random() * 1000);
             }
+          } else {
+            that.addClickFn();
           }
         }
       };
@@ -116,7 +121,7 @@ define(['component/chessboard', 'component/role', 'component/player', 'component
 
       this.gameOver = function () {
         this.removeClickFn();
-        Popup.animation(this.players[role.currentPlayer].name + ' win<br/>Game Over!');
+        popup.animation(this.players[role.currentPlayer].name + ' win<br/>Game Over!');
       };
     }
 

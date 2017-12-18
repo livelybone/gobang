@@ -16,9 +16,8 @@ define(['component/chessboard', 'component/pieces', 'component/role', 'utils/win
     if (clickDot.x >= chessboard.margin && clickDot.x <= (chessboard.width - chessboard.margin)
       && clickDot.y >= chessboard.margin && clickDot.y <= (chessboard.width - chessboard.margin)) {
       // 找到对应的横纵坐标，并落子
-      var coordinate = this.convertCoordinate(clickDot);
-      if (chessboard.coordinates[coordinate.abscissa][coordinate.ordinate] !== 0) return false;
-      this.pieces.createPiece(coordinate);
+      var toNext = this.pieces.createPiece(this.convertCoordinate(clickDot));
+      if (!toNext) return false;
 
       try {
         if (callback) callback();

@@ -1,7 +1,7 @@
 /**
  * Created by Livelybone on 2017-12-17.
  */
-define(['component/chessboard', 'component/pop-up', 'component/role'], function (chessboard, popup, role) {
+define(['component/chessboard', 'component/pop-up'], function (chessboard, popup) {
   function Pieces(role) {
     // 棋子30px*30px
     this.pieceWidth = 30;
@@ -12,11 +12,9 @@ define(['component/chessboard', 'component/pop-up', 'component/role'], function 
 
     this.createPiece = function createPiece(coordinate) {
       //不能重复落子
-      if (this.piecesArr.find(function (piece) {
-          return piece.abscissa === coordinate.abscissa && piece.ordinate === coordinate.ordinate
-        })) {
+      if (chessboard.coordinates[coordinate.abscissa][coordinate.ordinate] !== 0) {
         popup.animation("Don't play<br/>at the same place", 500);
-        return;
+        return false;
       }
 
       var piece = document.createElement('img'), pos = this.coordinateConvertToPos(coordinate);
@@ -30,6 +28,7 @@ define(['component/chessboard', 'component/pop-up', 'component/role'], function 
       // 保存棋子信息
       this.piecesArr.push({piece: piece, abscissa: coordinate.abscissa, ordinate: coordinate.ordinate});
       chessboard.coordinates[coordinate.abscissa][coordinate.ordinate] = role;
+      return true
     };
 
     this.coordinateConvertToPos = function coordinateConvertToPos(coordinate) {
