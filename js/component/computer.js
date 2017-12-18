@@ -29,7 +29,6 @@ define(['component/player', 'component/chessboard'], function (Player, chessboar
             && option.abscissa <= (chessboard.lineCount - 1)
             && option.ordinate >= 0
             && option.ordinate <= (chessboard.lineCount - 1)) {
-            console.log(i, j, option);
             notThis = allCoordinates.find(function (pos) {
               return pos.abscissa === option.abscissa && pos.ordinate === option.ordinate
             });

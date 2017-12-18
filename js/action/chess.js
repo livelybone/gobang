@@ -2,8 +2,8 @@
  * Created by Livelybone on 2017-12-17.
  */
 
-define(['component/chessboard', 'component/role', 'component/player', 'component/computer', 'component/pop-up', 'utils/win-dictionary', 'utils/utils'],
-  function (chessboard, role, Player, Computer, Popup, winDictionary, utils) {
+define(['component/chessboard', 'component/role', 'component/player', 'component/computer', 'component/pop-up', 'utils/win-dictionary'],
+  function (chessboard, role, Player, Computer, Popup, winDictionary) {
     function Chess() {
       // 同步实现
 
@@ -53,7 +53,7 @@ define(['component/chessboard', 'component/role', 'component/player', 'component
       this.restart = function () {
         chessboard.init();
         Popup.init();
-        this.players = null;
+        this.players = {};
       };
 
       this.clickFn = function clickFn(ev) {
