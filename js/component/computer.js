@@ -10,7 +10,7 @@ define(['component/player', 'component/chessboard', 'utils/win-dictionary', 'com
     this.isComputer = true;
     this.opponent = opponent;
 
-    this.computeCoordinate = function () {
+    /*this.computeCoordinate = function () {
       // 简单智能计算电脑落子的坐标，后期可以优化字典，利用权重提高AI水平
       var coordinate = {abscissa: 0, ordinate: 0};
 
@@ -28,7 +28,7 @@ define(['component/player', 'component/chessboard', 'utils/win-dictionary', 'com
         });
       });
 
-      /*// 创建周围1格内的落子位置数组
+      /!*!// 创建周围1格内的落子位置数组
       for (var i = -1; i <= 1; i++) {
         for (var j = -1; j <= 1; j++) {
           var option = {};
@@ -55,11 +55,11 @@ define(['component/player', 'component/chessboard', 'utils/win-dictionary', 'com
           ordinate = Math.floor(Math.random() * 15);
         }
         coordinate = {abscissa: abscissa, ordinate: ordinate}
-      }*/
+      }*!/
       return coordinate;
-    };
+    };*/
 
-    /*this.computeCoordinate = function () {
+    this.computeCoordinate = function () {
       // 简单智能计算电脑落子的坐标，后期可以优化字典，利用权重提高AI水平
       var opponentPieces = this.opponent.pieces.piecesArr,
         opponentCoordinate = opponentPieces[opponentPieces.length - 1], options = [];
@@ -94,7 +94,7 @@ define(['component/player', 'component/chessboard', 'utils/win-dictionary', 'com
         coordinate = {abscissa: abscissa, ordinate: ordinate}
       }
       return coordinate;
-    };*/
+    };
   }
 
   Computer.prototype.chess = function (callback) {
