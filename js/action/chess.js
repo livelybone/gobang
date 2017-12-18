@@ -29,6 +29,7 @@ define(['component/chessboard', 'component/role', 'component/player', 'component
           this.players.white = new Player(roleWhite.name, 'white');
           this.players.black = new Player(roleBlack.name, 'black');
         } else console.error('Two computer player is forbidden!');
+        console.log(this.players);
 
 
         Popup.animation('Game start!', 1000, function () {
@@ -53,6 +54,7 @@ define(['component/chessboard', 'component/role', 'component/player', 'component
       this.restart = function () {
         chessboard.init();
         Popup.init();
+        role.init();
         this.players = {};
       };
 

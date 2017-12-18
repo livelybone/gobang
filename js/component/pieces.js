@@ -29,6 +29,7 @@ define(['component/chessboard', 'component/pop-up', 'component/role'], function 
 
       // 保存棋子信息
       this.piecesArr.push({piece: piece, abscissa: coordinate.abscissa, ordinate: coordinate.ordinate});
+      chessboard.coordinates[coordinate.abscissa][coordinate.ordinate] = role;
     };
 
     this.coordinateConvertToPos = function coordinateConvertToPos(coordinate) {

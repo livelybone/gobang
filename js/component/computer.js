@@ -16,8 +16,6 @@ define(['component/player', 'component/chessboard'], function (Player, chessboar
         opponentCoordinate = opponentPieces[opponentPieces.length - 1], options = [];
       if (!opponentCoordinate) return {abscissa: 7, ordinate: 7};
 
-      var allCoordinates = this.pieces.piecesArr.concat(opponentPieces), notThis = true;
-
       // 创建周围1格内的落子位置数组
       for (var i = -1; i <= 1; i++) {
         for (var j = -1; j <= 1; j++) {
@@ -29,10 +27,7 @@ define(['component/player', 'component/chessboard'], function (Player, chessboar
             && option.abscissa <= (chessboard.lineCount - 1)
             && option.ordinate >= 0
             && option.ordinate <= (chessboard.lineCount - 1)) {
-            notThis = allCoordinates.find(function (pos) {
-              return pos.abscissa === option.abscissa && pos.ordinate === option.ordinate
-            });
-            if (!notThis) {
+            if (chessboard.coordinates[option.abscissa][option.ordinate] === 0) {
               options.push(option);
             }
           }
@@ -43,12 +38,9 @@ define(['component/player', 'component/chessboard'], function (Player, chessboar
       // 如果出现死胡同 - 九宫格，则随机取点
       if (!coordinate) {
         var abscissa = Math.floor(Math.random() * 15), ordinate = Math.floor(Math.random() * 15);
-        while (notThis) {
+        while (chessboard.coordinates[abscissa][ordinate] !== 0) {
           abscissa = Math.floor(Math.random() * 15);
           ordinate = Math.floor(Math.random() * 15);
-          notThis = allCoordinates.find(function (pos) {
-            return pos.abscissa === abscissa && pos.ordinate === ordinate
-          })
         }
         coordinate = {abscissa: abscissa, ordinate: ordinate}
       }
