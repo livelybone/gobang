@@ -6,7 +6,6 @@ define(['utils/utils'], function (utils) {
     // board 棋盘DOM元素
     this.board = board;
     this.board.style.position = 'relative';
-    this.board.style.display = 'inline-block';
 
     // 五子棋纵横15道，棋盘设计：边界宽20px、边界线宽3px、线宽2px、棋格40px*40px、棋子30px*30px
     this.lineCount = 15;
@@ -28,6 +27,7 @@ define(['utils/utils'], function (utils) {
 
     this.init = function () {
       this.board.innerHTML = '<img src="./images/chessboard.png" alt="">';
+      console.log(this.board);
       if (!this.boardOffset.offsetLeft) this.boardOffset = utils.getOffset(this.board);
 
       for (var i = 0; i < 15; i++) {

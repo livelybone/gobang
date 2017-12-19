@@ -53,6 +53,7 @@ function getFinger(req) {
 function Routes() {
   return [
     {route: '/enter', tip: '欢迎进入我的五子棋'},
+    {route: '/listen/players', tip: '监听玩家进入退出'},
     {route: '/start', tip: '游戏开始'},
     {route: '/chess', tip: '下棋'},
     {route: '/give-up', tip: '投降'},

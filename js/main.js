@@ -7,7 +7,7 @@ require.config({
   }
 });
 
-require(['jquery', 'action/chess', 'action/getPlayers'], function (jQuery, Chess, getPlayers) {
+require(['jquery', 'action/chess', 'ajax/getPlayers'], function (jQuery, Chess, getPlayers) {
   console.log('jQuery version: ' + jQuery().jquery);
   window['chessboard'] = new Chess();
   chessboard.init();

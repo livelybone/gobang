@@ -8,14 +8,25 @@
 </head>
 <body>
 
-<div id="gobang">
-</div>
+<div class="container">
+  <div class="chess-room">
+    <div id="gobang"></div>
 
-<div id="btn-group">
-  <button id="black">我执黑子</button>
-  <button id="white">我执白子</button>
-  <span id="tip">** 黑子先行 **</span>
-  <button id="restart" style="display:none">重新开始</button>
+    <div id="btn-group">
+      <button id="black">我执黑子</button>
+      <button id="white">我执白子</button>
+      <span id="tip">** 黑子先行 **</span>
+      <button id="restart" style="display:none">重新开始</button>
+    </div>
+  </div>
+
+  <div id="players">
+    <h1 class="title">玩家列表</h1>
+    <div class="player">
+      <h2 class="name">玩家1</h2>
+      <button class="chess-btn">对弈</button>
+    </div>
+  </div>
 </div>
 
 <!--<script src="http://libs.baidu.com/jquery/1.9.1/jquery.min.js"></script>-->
