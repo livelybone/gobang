@@ -51,6 +51,7 @@ define(['component/chessboard', 'component/role', 'component/player', 'component
       };
 
       this.restart = function () {
+        this.removeClickFn();
         chessboard.init();
         popup.init();
         role.init();
