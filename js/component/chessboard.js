@@ -44,5 +44,5 @@ define(['utils/utils'], function (utils) {
     };
   }
 
-  return new Chessboard(ele('gobang'));
+  return new Chessboard($('#gobang')[0]);
 });

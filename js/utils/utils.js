@@ -27,5 +27,11 @@ define(function () {
     }
   }
 
-  return {getOffset: getOffset, getScroll: getScroll};
+  if (!String.prototype.trim) {
+    String.prototype.trim = function () {
+      return this.replace(/^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, '');
+    };
+  }
+
+  return {getOffset: getOffset, getScroll: getScroll, backUrl: 'http://192.168.3.71'};
 });

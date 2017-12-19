@@ -1,15 +1,21 @@
 // 项目也没有特别复杂，就没有使用jQuery,react,angular2,vue框架了，使用了requireJS将js模块化
 
 require.config({
-  baseUrl: './js'
+  baseUrl: './js',
+  paths: {
+    jquery: 'jquery.min'
+  }
 });
 
-require(['action/chess'], function (Chess) {
+require(['jquery', 'action/chess', 'action/getPlayers'], function (jQuery, Chess, getPlayers) {
+  console.log('jQuery version: ' + jQuery().jquery);
   window['chessboard'] = new Chess();
   chessboard.init();
-  ele('black').addEventListener('click', begin.bind(null, 'black'));
-  ele('white').addEventListener('click', begin.bind(null, 'white'));
-  ele('restart').addEventListener('click', restart.bind(null));
+  $('#black').bind('click', begin.bind(null, 'black'));
+  $('#white').bind('click', begin.bind(null, 'white'));
+  $('#restart').bind('click', restart.bind(null));
+
+  getPlayers();
 });
 
 requirejs.onError = err;
@@ -21,30 +27,18 @@ function begin(role) {
   ];
   var roleBlack = role === 'black' ? roles[0] : roles[1], roleWhite = role === 'white' ? roles[0] : roles[1];
   chessboard.gameStart(roleBlack, roleWhite);
-  hide(ele('black'));
-  hide(ele('white'));
-  hide(ele('tip'));
-  show(ele('restart'));
+  $('#black').hide();
+  $('#white').hide();
+  $('#tip').hide();
+  $('#restart').show();
 }
 
 function restart() {
   chessboard.restart();
-  show(ele('black'));
-  show(ele('white'));
-  show(ele('tip'));
-  hide(ele('restart'));
-}
-
-function ele(id) {
-  return document.getElementById(id);
-}
-
-function hide(ele) {
-  ele.style.display = 'none';
-}
-
-function show(ele) {
-  ele.style.display = 'block';
+  $('#black').show();
+  $('#white').show();
+  $('#tip').show();
+  $('#restart').hide();
 }
 
 function err(error) {
