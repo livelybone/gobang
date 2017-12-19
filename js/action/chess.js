@@ -19,17 +19,8 @@ define(['component/chessboard', 'component/role', 'component/player', 'component
 
       this.gameStart = function (roleBlack, roleWhite) {
         // 初始化棋手
-        if (roleBlack.isComputer) {
-          this.players.white = new Player(roleWhite.name, 'white');
-          this.players.black = new Computer(roleBlack.name, 'black', this.players.white);
-        } else if (roleWhite.isComputer) {
-          this.players.black = new Player(roleBlack.name, 'black');
-          this.players.white = new Computer(roleWhite.name, 'white', this.players.black);
-        } else if (!roleBlack.isComputer && !roleWhite.isComputer) {
-          this.players.white = new Player(roleWhite.name, 'white');
-          this.players.black = new Player(roleBlack.name, 'black');
-        } else console.error('Two computer player is forbidden!');
-
+        this.players.white = roleWhite.isComputer ? new Computer(roleWhite.name, 'white') : new Player(roleWhite.name, 'white');
+        this.players.black = roleBlack.isComputer ? new Computer(roleBlack.name, 'black') : new Player(roleBlack.name, 'black');
 
         popup.animation('Game start!', 1000, function () {
           var currentPlayer = that.players[role.currentPlayer];

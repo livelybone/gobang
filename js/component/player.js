@@ -64,7 +64,6 @@ define(['component/chessboard', 'component/pieces', 'component/role', 'utils/win
         // 如果已被占位，则去除该位置的可能性
 
         if (chessboard.coordinates[i][j] === 0) {
-
           // 计算己方权重
           myGroups.map(function (group) {
             var pos = group.find(function (p) {
@@ -76,7 +75,6 @@ define(['component/chessboard', 'component/pieces', 'component/role', 'utils/win
                 return chessboard.coordinates[p.abscissa][p.ordinate] === that.role;
               });
               weights[i][j] += that.weight(coordinates.length);
-              // if (that.name === 'Computer' && weights[i][j] > 10) console.log(i, j, weights[i][j]);
             }
           });
 
@@ -90,7 +88,6 @@ define(['component/chessboard', 'component/pieces', 'component/role', 'utils/win
                 return chessboard.coordinates[p.abscissa][p.ordinate] === oppRole;
               });
               oppWeights[i][j] -= that.weight(coordinates.length);
-              if (that.name === 'Computer' && oppWeights[i][j] > 10) console.log(i, j, oppWeights[i][j]);
             }
           })
         } else {
