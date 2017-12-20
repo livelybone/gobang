@@ -5,13 +5,10 @@
 define(function () {
   function getOffset(ele) {
     var offsetParent = ele.offsetParent, offsetLeft = ele.offsetLeft, offsetTop = ele.offsetTop;
-    console.log({offsetLeft: offsetLeft, offsetTop: offsetTop});
     while (offsetParent) {
-      console.log(offsetParent);
       offsetLeft += offsetParent.offsetLeft;
       offsetTop += offsetParent.offsetTop;
       offsetParent = offsetParent.offsetParent;
-      console.log({offsetLeft: offsetLeft, offsetTop: offsetTop});
     }
     return {offsetLeft: offsetLeft, offsetTop: offsetTop};
   }

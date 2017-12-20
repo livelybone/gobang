@@ -27,7 +27,6 @@ define(['jquery', 'utils/utils'], function (jquery, utils) {
 
     this.init = function () {
       this.board.innerHTML = '<img src="./images/chessboard.png" alt="">';
-      console.log(this.board, utils);
       if (!this.boardOffset.offsetLeft) this.boardOffset = utils.getOffset(this.board);
 
       for (var i = 0; i < 15; i++) {
