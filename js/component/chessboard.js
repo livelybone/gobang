@@ -1,7 +1,7 @@
 /**
  * Created by Livelybone on 2017-12-17.
  */
-define(['utils/utils'], function (utils) {
+define(['jquery', 'utils/utils'], function (jquery, utils) {
   function Chessboard(board) {
     // board 棋盘DOM元素
     this.board = board;
@@ -27,7 +27,7 @@ define(['utils/utils'], function (utils) {
 
     this.init = function () {
       this.board.innerHTML = '<img src="./images/chessboard.png" alt="">';
-      console.log(this.board);
+      console.log(this.board, utils);
       if (!this.boardOffset.offsetLeft) this.boardOffset = utils.getOffset(this.board);
 
       for (var i = 0; i < 15; i++) {

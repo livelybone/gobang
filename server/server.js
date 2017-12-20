@@ -5,7 +5,7 @@
 
 global['players'] = [];
 global['chessPlayers'] = [];
-global['routes'] = Routes();
+global['routes'] = require('./controller/controller');
 global['queue'] = {};
 
 var http = require('http'), URL = require('url'),
@@ -26,7 +26,7 @@ var http = require('http'), URL = require('url'),
             res: res
           };
         } else {
-          res.end(route.tip);
+          route.controller(finger, res);
           return true;
         }
       }

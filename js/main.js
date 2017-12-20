@@ -18,7 +18,7 @@ require(['jquery', 'action/chess', 'ajax/getPlayers'], function (jQuery, Chess, 
   getPlayers();
 });
 
-requirejs.onError = err;
+// requirejs.onError = err;
 
 function begin(role) {
   var roles = [

@@ -9,5 +9,5 @@ exports.controller = function (finger, res) {
     return player.finger === finger
   });
   if (!player) players.push({finger: finger});
-  res.end(JSON.stringify(players));
+  res.end(JSON.stringify({players: players, isNew: !player}));
 };
