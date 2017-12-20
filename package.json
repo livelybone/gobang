@@ -1,0 +1,10 @@
+{
+  "name": "GoBang",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "node ./server.js",
+    "server": "node ./server/server.js"
+  },
+  "dependencies": {
+  }
+}

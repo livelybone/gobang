@@ -6,6 +6,7 @@
 var players = [];
 var chessPlayers = [];
 var routes = Routes();
+var queue = {};
 
 var http = require('http'), URL = require('url'),
   server = http.createServer(function (req, res) {
@@ -19,11 +20,17 @@ var http = require('http'), URL = require('url'),
     var url = URL.parse(req.url);
     routes.find(function (route) {
       if (url.pathname === route.route) {
-        res.end(route.tip);
-        return true;
+        if (route.pending) {
+          queue[finger] = {
+            type: route.type,
+            res: res
+          };
+        } else {
+          res.end(route.tip);
+          return true;
+        }
       }
     });
-    res.end('Hello world!');
   }).listen(8080, function () {
     console.info('--------------Listening on port 8080--------------');
   }).on('error', function (e) {
@@ -53,9 +60,10 @@ function getFinger(req) {
 function Routes() {
   return [
     {route: '/enter', tip: '欢迎进入我的五子棋'},
-    {route: '/listen/players', tip: '监听玩家进入退出'},
-    {route: '/start', tip: '游戏开始'},
-    {route: '/chess', tip: '下棋'},
+    {route: '/listen/players', tip: '监听玩家进入退出', pending: true, type: 'player'},
+    {route: '/invite', tip: '邀请游戏', pending: true, type: 'wait-for-accept'},
+    {route: '/accept', tip: '接受邀请'},
+    {route: '/chess', tip: '下棋', pending: true, type: 'chess'},
     {route: '/give-up', tip: '投降'},
     {route: '/leave', tip: '离开游戏'}
   ];
