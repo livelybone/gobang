@@ -10,14 +10,15 @@ global['queue'] = {};
 
 var http = require('http'), URL = require('url'),
   server = http.createServer(function (req, res) {
-    var finger = getFinger(req);
+    var url = URL.parse(req.url);
+    var finger = getFinger(url);
     res.writeHead(200, {
       'Content-Type': 'text/plain;charset=utf-8',
-      'Set-Cookie': 'finger=' + finger,
       'Access-Control-Allow-Origin': '*'
     });
 
-    var url = URL.parse(req.url);
+    console.log(req.headers, req.headers.cookie);
+
     routes.find(function (route) {
       if (url.pathname === route.route) {
         if (route.pending) {
@@ -37,18 +38,9 @@ var http = require('http'), URL = require('url'),
     console.error(e);
   });
 
-function getFinger(req) {
-  var cookie = {}, finger;
-  if (!req.headers.cookie) finger = null;
-  else {
-    req.headers.cookie.split(';').map(function (kv) {
-      var arr = kv.trim().split('=');
-      if (arr[0] && arr[1]) cookie[arr[0]] = arr[1];
-      return kv;
-    });
-    finger = cookie['finger'];
-  }
-  finger = finger || (new Date().getTime() + '' + Math.random().toFixed(5));
+function getFinger(url) {
+  console.log(url);
+  var finger = url.query['finger'];
   var player = players.find(function (player) {
     return player.finger === finger;
   });

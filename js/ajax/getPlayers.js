@@ -2,9 +2,9 @@
  * Created by Livelybone on 2017-12-17.
  */
 
-define(['config/config'], function (config) {
-  function getPlayers(callback) {
-    $.get(config.backendUrl + '/enter', function (data) {
+define(['config/config', 'utils/api'], function (config, api) {
+  function getPlayers(finger, callback) {
+    api.get(config.backendUrl + '/enter', {finger: finger}, function (data) {
       console.log(data);
       try {
         if (callback) callback(data)
