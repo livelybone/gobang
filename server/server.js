@@ -3,10 +3,10 @@
  * Node Server
  */
 
-var players = [];
-var chessPlayers = [];
-var routes = Routes();
-var queue = {};
+global['players'] = [];
+global['chessPlayers'] = [];
+global['routes'] = Routes();
+global['queue'] = {};
 
 var http = require('http'), URL = require('url'),
   server = http.createServer(function (req, res) {
