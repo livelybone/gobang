@@ -3,51 +3,39 @@
  * Node Server
  */
 
+// 在服务器中的所有玩家
 global['players'] = [];
+
+// 在服务器中对弈的玩家组合
 global['chessPlayers'] = [];
+
+// 在服务器中的消息队列，包括玩家进出，玩家邀请等待，玩家对弈
+global['queue'] = [];
+
+// 路由控制
 global['routes'] = require('./controller/controller');
-global['queue'] = {};
 
-var http = require('http'), URL = require('url'),
-  server = http.createServer(function (req, res) {
-    var url = URL.parse(req.url);
-    var finger = getFinger(url);
-    res.writeHead(200, {
-      'Content-Type': 'text/plain;charset=utf-8',
-      'Access-Control-Allow-Origin': '*'
-    });
+var http = require('http'),
+  URL = require('url');
 
-    console.log(req.headers, req.headers.cookie);
-
-    routes.find(function (route) {
-      if (url.pathname === route.route) {
-        if (route.pending) {
-          queue[finger] = {
-            type: route.type,
-            res: res
-          };
-        } else {
-          route.controller(finger, res);
-          return true;
-        }
-      }
-    });
-  }).listen(8080, function () {
-    console.info('--------------Listening on port 8080--------------');
-  }).on('error', function (e) {
-    console.error(e);
+http.createServer(function (req, res) {
+  var url = URL.parse(req.url, true);
+  res.writeHead(200, {
+    'Content-Type': 'text/plain;charset=utf-8',
+    'Access-Control-Allow-Origin': '*'
   });
 
-function getFinger(url) {
-  console.log(url);
-  var finger = url.query['finger'];
-  var player = players.find(function (player) {
-    return player.finger === finger;
+  routes.find(function (route) {
+    if (url.pathname === route.route) {
+      route.controller(req, res);
+      return true;
+    }
   });
-  if (!player) players.push({finger: finger});
-
-  return finger;
-}
+}).listen(8080, function () {
+  console.info('--------------Listening on port 8080--------------');
+}).on('error', function (e) {
+  console.error(e);
+});
 
 function Routes() {
   return [
