@@ -20,7 +20,7 @@ require(['jquery', 'action/chess', 'action/action', 'utils/api'], function (jQue
 
   action.getPlayers(function (data, status, xhr) {
     renderPlayerList(data.players);
-    action.listenPlayer(function(data){
+    action.listenPlayer(function (data) {
 
     })
   });

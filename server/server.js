@@ -3,17 +3,17 @@
  * Node Server
  */
 
-// 在服务器中的所有玩家
+// 在服务器中的所有玩家，玩家属性：
+// name, finger(id),opponent(对手信息，name,finger),
+// listenHandle(用于监听其他玩家的进出),
+// chessHandle(用于监听对手下棋),
+// inviteHandle(用于监听我邀请的结果)
+// matchHandle(用于监听我匹配的结果)
+// listenInvitedHandle(用于监听其它玩家对我的邀请)
 global['players'] = [];
 
-// 在服务器中对弈的玩家组合
-global['chessPlayers'] = [];
-
-// 在服务器中的消息队列，包括玩家进出，玩家邀请等待，玩家对弈
-global['queue'] = [];
-
 // 路由控制
-global['routes'] = require('./controller/controller');
+global['routes'] = require('./controllers');
 
 var http = require('http'),
   URL = require('url');
@@ -26,7 +26,7 @@ http.createServer(function (req, res) {
   });
 
   routes.find(function (route) {
-    if (url.pathname === route.route) {
+    if (url.pathname === route.route && url.method === route.method) {
       route.controller(req, res);
       return true;
     }

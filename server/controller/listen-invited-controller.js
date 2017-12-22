@@ -6,15 +6,16 @@
 var getFinger = require('../utils/get-finger');
 
 exports.method = 'GET';
-exports.route = '/listen/players';
+exports.route = '/get/invite';
 exports.controller = function (req, res) {
+  "use strict";
   getFinger(req, function (finger) {
-    "use strict";
-    // 刷新玩家的listenHandle
+    // 给自己添加listenInvitedHandle
     players.find(function (player) {
       if (player.finger === finger) {
-        player.listenHandle = {res: res};
+        player.listendInvitedHandle = {res: res};
+        return true;
       }
     })
-  });
+  })
 };

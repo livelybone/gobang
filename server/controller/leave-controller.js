@@ -5,43 +5,31 @@
 
 var getFinger = require('../utils/get-finger');
 
+exports.method = 'GET';
 exports.route = '/leave';
 exports.controller = function (req, res) {
-  var finger = getFinger(req.url);
-  var player = players.find(function (player) {
-    return player.finger === finger
-  });
+  getFinger(req, function (finger) {
+    "use strict";
+    // 移除玩家
+    var p = players.find(function (player, index) {
+      if (player.finger === finger) {
+        players.splice(index, 1);
+        return true;
+      }
+    });
 
-  //
-  queue.find(function (q, index) {
-    if (q.finger === finger && q.type === 'player') {
-      queue.splice(index, 1);
-      return true;
-    }
-  });
+    // 终止玩家的棋局，并通知其他玩家，该玩家离开
+    players.map(function (player) {
+      var res;
 
-  global.players = players.filter(function (player) {
-    return player.finger !== finger;
-  });
+      if (player.opponent.finger === finger) {
+        player.opponent = null;
+        player.chessHandle = null;
+      }
 
-  global.chessPlayers = chessPlayers.filter(function (players) {
-    var isBlack = players.black.finger === finger, isWhite = player.white.finger === finger;
-    if (isBlack || isWhite) {
-      queue.find(function (q, index) {
-        // players.wait 正在等待的对弈方：black、white
-        if (q.finger === players[players.wait].finger && q.type === 'chess') {
-          q.res.end(JSON.stringify({type: 'escape', player: {finger: q.finger}}));
-          queue.splice(index, 1);
-          return true;
-        }
-      });
-    }
-    return !(isBlack || isWhite);
-  });
-
-  // 通知其他玩家，该玩家离开
-  queue.map(function (q) {
-    if (q.type === 'player')
-      q.res.end(JSON.stringify({player: player, leave: true}));
+      res = player.listenHandle && player.listenHandle.res;
+      if (res)
+        res.end(JSON.stringify({player: p, leave: true}));
+    });
   });
 };

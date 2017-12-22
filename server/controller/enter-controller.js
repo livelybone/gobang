@@ -5,19 +5,23 @@
 
 var getFinger = require('../utils/get-finger');
 
+exports.method = 'GET';
 exports.route = '/enter';
 exports.controller = function (req, res) {
-  var finger = getFinger(req.url);
-  var player = players.find(function (player) {
-    return player.finger === finger
+  getFinger(req, function (finger) {
+    "use strict";
+    var player = players.find(function (player) {
+      return player.finger === finger
+    });
+    if (!player) {
+      player = {finger: finger};
+      players.map(function (p) {
+        if (p.listenHandle) {
+          p.listenHandle.res.end(JSON.stringify({player: player, refresh: true}))
+        }
+      });
+      players.push(player);
+    }
+    res.end(JSON.stringify({players: players, isNew: !player}));
   });
-  if (!player) {
-    player = {finger: finger};
-    players.push(player);
-    queue.map(function (q) {
-      if (q.type === 'player')
-        q.res.end(JSON.stringify({player: player, enter: true}));
-    })
-  }
-  res.end(JSON.stringify({players: players, isNew: !player}));
 };
