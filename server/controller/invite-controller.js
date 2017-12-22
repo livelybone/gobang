@@ -10,21 +10,33 @@ exports.route = '/invite';
 exports.controller = function (req, res) {
   "use strict";
   getData(req, function (data) {
-    console.log(data);
-    var finger = data.data.finger, opponent = data.data.opponent;
+    // console.log(data);
+    var finger = data.data.finger, opponentFinger = data.data.opponentFinger;
 
     players.map(function (player) {
       // 给opponent发送邀请
-      if (player.finger = opponent.finger) {
-        var res = player.listendInvitedHandle && player.listendInvitedHandle.res;
-        res.end(JSON.stringify({player: {finger: finger}, type: 'invite'}));
+      if (player.finger === opponentFinger) {
+        var res1 = player.listendInvitedHandler && player.listendInvitedHandler.res;
+        res1.end(JSON.stringify({player: {finger: finger}, type: 'invite'}));
         return
       }
 
-      // 给自己添加inviteHandle
+      // 更新自己的inviteHandlers
       if (player.finger === finger) {
-        player.inviteHandle = {res: res};
+        if (!player.inviteHandlers) player.inviteHandlers = [];
+
+        // 已邀请过，则更新handler
+        var inviteHandler = player.inviteHandlers.find(function (handler) {
+          if (handler.opponentFinger === opponentFinger) {
+            handler.res = res;
+
+            return true;
+          }
+        });
+
+        // 未邀请，则添加handler
+        if (!inviteHandler) player.inviteHandlers.push({opponentFinger: opponentFinger, res: res});
       }
-    })
+    });
   })
 };

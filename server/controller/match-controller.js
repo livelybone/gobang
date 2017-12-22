@@ -6,7 +6,7 @@
 var getFinger = require('../utils/get-finger');
 
 exports.method = 'POST';
-exports.route = '/invite';
+exports.route = '/match';
 exports.controller = function (req, res) {
   "use strict";
   getFinger(req, function (finger) {
@@ -14,14 +14,14 @@ exports.controller = function (req, res) {
         return player.finger === finger
       }),
       matches = players.filter(function (player) {
-        return player.matchHandle && player.matchHandle.res
+        return player.matchHandler && player.matchHandler.res
       });
 
-    // 如果有正在匹配的玩家，则匹配成功，并删除玩家的matchHandle，否则给自己添加matchHandle，等待其他玩家加入
+    // 如果有正在匹配的玩家，则匹配成功，并删除玩家的matchHandler，否则给自己添加matchHandler，等待其他玩家加入
     if (matches.length > 0) {
-      matches[0].matchHandle.res.end(JSON.stringify({match: 'SUCCESS', player: {finger: finger}}));
+      matches[0].matchHandler.res.end(JSON.stringify({match: 'SUCCESS', player: {finger: finger}}));
       res.end(JSON.stringify({match: 'SUCCESS', player: {finger: matches[0].finger}}));
-      matches[0].matchHandle = null;
-    } else me.matchHandle = {res: res};
+      matches[0].matchHandler = null;
+    } else me.matchHandler = {res: res};
   })
 };

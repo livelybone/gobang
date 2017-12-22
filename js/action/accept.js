@@ -3,8 +3,8 @@
  */
 
 define(['utils/api'], function (api) {
-  function invite(opponentFinger, callback) {
-    api.post('/invite', {opponentFinger: opponentFinger}, function (data, status, xhr) {
+  function accept(opponentFinger, callback) {
+    api.post('/accept', {opponentFinger: opponentFinger}, function (data, status, xhr) {
       try {
         if (callback) callback(data, status, xhr)
       } catch (e) {
@@ -13,5 +13,5 @@ define(['utils/api'], function (api) {
     })
   }
 
-  return invite;
+  return accept;
 });

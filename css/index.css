@@ -3,6 +3,7 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    border: none;
     outline: none !important;
     font-size: 14px;
     color: #666;
@@ -89,6 +90,8 @@ button {
 }
 
 .title {
+    display: flex;
+    justify-content: space-between;
     position: absolute;
     left: 0;
     right: 0;
@@ -99,6 +102,24 @@ button {
     font-size: 16px;
     line-height: 50px;
     background: #fff;
+}
+
+#broadcast {
+    max-width: 200px;
+    font-size: 12px;
+    color: #999;
+    font-weight: 500;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+#broadcast .blue {
+    color: #008add;
+}
+
+#broadcast .red {
+    color: #DD5876;
 }
 
 .player {
@@ -131,7 +152,7 @@ button {
 }
 
 .chess-btn {
-    width: 60px;
+    padding: 0 20px;
     height: 28px;
     border: 1px solid #008add;
 }
@@ -139,4 +160,61 @@ button {
 .chess-btn:hover {
     background: #008add;
     color: #fff;
+}
+
+.chess-btn.disable {
+    background: #eee !important;
+    border-color: #eee !important;
+    color: #999 !important;
+    cursor: default !important;
+}
+
+/* overlay */
+#overlay, #overlay-tip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 5;
+    background: rgba(0, 0, 0, .5);
+}
+
+.float-win {
+    width: 400px;
+    border-radius: 5px;
+    background: #fff;
+    overflow: hidden;
+}
+
+.float-title {
+    padding: 40px;
+    line-height: 30px;
+    font-weight: 500;
+    font-size: 16px;
+    color: #333;
+}
+
+.float-btn-group {
+    display: flex;
+    border-top: 1px solid #eee;
+}
+
+.float-btn {
+    flex: 1;
+    width: 100%;
+    height: 40px;
+    font-size: 14px;
+    color: #666;
+}
+
+.float-btn:last-child {
+    border: none;
+}
+
+.float-btn:hover {
+    background: #fafafa;
 }

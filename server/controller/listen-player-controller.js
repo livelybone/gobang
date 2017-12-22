@@ -10,10 +10,10 @@ exports.route = '/listen/players';
 exports.controller = function (req, res) {
   getFinger(req, function (finger) {
     "use strict";
-    // 刷新玩家的listenHandle
+    // 刷新玩家的listenHandler
     players.find(function (player) {
       if (player.finger === finger) {
-        player.listenHandle = {res: res};
+        player.listenHandler = {res: res};
       }
     })
   });

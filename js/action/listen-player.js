@@ -2,11 +2,15 @@
  * Created by Livelybone on 2017-12-17.
  */
 
-define(['config/config', 'utils/api'], function (config, api) {
+define(['utils/api'], function (api) {
   function listenPlayer(callback) {
-    api.get(config.backendUrl + '/listen/players', function (data, status, xhr) {
+    // 建立长轮询
+    api.get('/listen/players', function (data, status, xhr) {
       try {
-        if (callback) callback(data, status, xhr)
+        if (callback) callback(data, status, xhr);
+
+        //再次建立长轮询
+        listenPlayer(callback);
       } catch (e) {
         console.error(e);
       }

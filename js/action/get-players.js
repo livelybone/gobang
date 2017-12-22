@@ -2,9 +2,9 @@
  * Created by Livelybone on 2017-12-17.
  */
 
-define(['config/config', 'utils/api'], function (config, api) {
+define(['utils/api'], function (api) {
   function getPlayers(callback) {
-    api.get(config.backendUrl + '/enter', function (data, status, xhr) {
+    api.get('/enter', function (data, status, xhr) {
       try {
         if (callback) callback(data, status, xhr)
       } catch (e) {

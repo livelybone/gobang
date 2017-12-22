@@ -10,10 +10,10 @@ exports.route = '/get/invite';
 exports.controller = function (req, res) {
   "use strict";
   getFinger(req, function (finger) {
-    // 给自己添加listenInvitedHandle
+    // 给自己添加listenInvitedHandler
     players.find(function (player) {
       if (player.finger === finger) {
-        player.listendInvitedHandle = {res: res};
+        player.listendInvitedHandler = {res: res};
         return true;
       }
     })

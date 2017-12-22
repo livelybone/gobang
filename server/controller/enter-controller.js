@@ -10,18 +10,38 @@ exports.route = '/enter';
 exports.controller = function (req, res) {
   getFinger(req, function (finger) {
     "use strict";
-    var player = players.find(function (player) {
+    console.log(finger);
+    var player1 = players.find(function (player) {
+      console.log(player.finger, finger, player.finger === finger);
       return player.finger === finger
     });
-    if (!player) {
-      player = {finger: finger};
+    console.log(!!player1, player1 && player1.finger);
+    if (!player1) {
+      var player2 = {finger: finger};
       players.map(function (p) {
-        if (p.listenHandle) {
-          p.listenHandle.res.end(JSON.stringify({player: player, refresh: true}))
+        if (p.listenHandler) {
+          p.listenHandler.res.end(JSON.stringify({player: player2, refresh: true, enterOrLeave: 'enter'}))
         }
       });
-      players.push(player);
+      players.push(player2);
     }
-    res.end(JSON.stringify({players: players, isNew: !player}));
+
+    var p = players.filter(function (player) {
+      return !player.role
+    }).concat(players.filter(function (player) {
+      return player.role
+    })).map(function (player) {
+      return {
+        name: player.name,
+        finger: player.finger,
+        role: player.role,
+        isChess: !!player.role
+      }
+    });
+    // console.log(players.length, p);
+    res.end(JSON.stringify({
+      players: p,
+      isNew: true
+    }));
   });
 };

@@ -2,7 +2,7 @@
  * Created by Livelybone on 2017-12-17.
  */
 
-define(['jquery'], function ($) {
+define(['config/config', 'jquery'], function (config, $) {
   function Api() {
     this.finger = getCookie('finger');
     if (!this.finger) {
@@ -24,8 +24,8 @@ define(['jquery'], function ($) {
         body = arguments[1];
         callback = arguments[2];
       }
-      $.get(url, $.extend(body, {finger: this.finger}), function (data, textStatus, jqXHR) {
-        if (callback) callback(JSON.parse(data));
+      $.get(config.backendUrl + url, $.extend(body, {finger: this.finger}), function (data, textStatus, jqXHR) {
+        if (callback) callback(parse(data));
       });
     };
 
@@ -37,10 +37,23 @@ define(['jquery'], function ($) {
         body = arguments[1];
         callback = arguments[2];
       }
-      $.post(url, $.extend(body, {finger: this.finger}), function (data, textStatus, jqXHR) {
-        if (callback) callback(JSON.parse(data));
+      $.post(config.backendUrl + url, $.extend(body, {finger: this.finger}), function (data, textStatus, jqXHR) {
+        if (callback) callback(parse(data));
       });
     }
+  }
+
+  function parse(data) {
+    "use strict";
+    var d;
+    try {
+      d = JSON.parse(data);
+    } catch (e) {
+      console.log(e);
+      d = data;
+    }
+    console.log(d);
+    return d;
   }
 
   function getCookie(key) {

@@ -15,18 +15,18 @@ exports.controller = function (req, res) {
 
 
     players.map(function (player) {
-      // 给对手发送棋子位置，并清除对手的chessHandle
+      // 给对手发送棋子位置，并清除对手的chessHandler
       if (player.opponent.finger = finger) {
-        var res = player.chessHandle && player.chessHandle.res;
-        res.end(JSON.stringify({pos: pos, opponent: {finger: finger}}));
-        player.chessHandle = null;
+        var res1 = player.chessHandler && player.chessHandler.res;
+        res1.end(JSON.stringify({pos: pos, opponent: {finger: finger}}));
+        player.chessHandler = null;
         console.log('after res.end');
         return
       }
 
-      // 给自己添加chessHandle
+      // 给自己添加chessHandler
       if (player.finger === finger) {
-        player.chessHandle = {res: res};
+        player.chessHandler = {res: res};
       }
     })
   })

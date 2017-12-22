@@ -20,16 +20,17 @@ exports.controller = function (req, res) {
 
     // 终止玩家的棋局，并通知其他玩家，该玩家离开
     players.map(function (player) {
-      var res;
+      var res1;
 
       if (player.opponent.finger === finger) {
         player.opponent = null;
-        player.chessHandle = null;
+        player.chessHandler = null;
+        player.role = null;
       }
 
-      res = player.listenHandle && player.listenHandle.res;
-      if (res)
-        res.end(JSON.stringify({player: p, leave: true}));
+      res1 = player.listenHandler && player.listenHandler.res;
+      if (res1)
+        res1.end(JSON.stringify({player: p, enterOrLeave: 'leave'}));
     });
   });
 };

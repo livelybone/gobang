@@ -1,4 +1,4 @@
-var URL = require('url');
+var URL = require('url'), querystring = require('querystring');
 module.exports = function getData(req, callback) {
   var urlData = URL.parse(req.url, true).query;
   var postData = {}, data = '';
@@ -6,11 +6,8 @@ module.exports = function getData(req, callback) {
   req.on('data', function (chunk) {
     data += chunk;
   });
-  req.on('end', function (e) {
-    console.log(e);
-    console.log(data);
+  req.on('end', function () {
+    postData = querystring.parse(data);
     if (callback) callback({data: Object.assign({}, urlData, postData), getData: urlData, postData: postData});
   });
-
-  return pos;
 };
