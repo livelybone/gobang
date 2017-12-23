@@ -10,7 +10,7 @@ exports.route = '/refuse';
 exports.controller = function (req, res) {
   "use strict";
   getData(req, function (data) {
-    console.log(data);
+    // console.log(data);
     var finger = data.data.finger, opponentFinger = data.data.opponentFinger;
 
     var me = players.find(function (player) {
@@ -31,6 +31,6 @@ exports.controller = function (req, res) {
       }
     });
 
-    res.end(JSON.stringify({type: 'REFUSE', player: {finger: opponentFinger}}));
+    res.end(JSON.stringify({match: 'REFUSE', opponent: {finger: opponentFinger}}));
   })
 };

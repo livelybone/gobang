@@ -4,7 +4,7 @@
 
 define(['utils/api'], function (api) {
   function getPlayers(callback) {
-    api.get('/enter', function (data, status, xhr) {
+    api.get('/enter', {}, function (data, status, xhr) {
       try {
         if (callback) callback(data, status, xhr)
       } catch (e) {

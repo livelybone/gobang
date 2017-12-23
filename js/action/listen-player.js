@@ -5,7 +5,7 @@
 define(['utils/api'], function (api) {
   function listenPlayer(callback) {
     // 建立长轮询
-    api.get('/listen/players', function (data, status, xhr) {
+    api.get('/listen/players', {}, function (data, status, xhr) {
       try {
         if (callback) callback(data, status, xhr);
 
@@ -14,6 +14,9 @@ define(['utils/api'], function (api) {
       } catch (e) {
         console.error(e);
       }
+    }, function (xhr, errorMsg, exception) {
+      console.log(xhr, errorMsg, exception);
+      listenPlayer(callback)
     })
   }
 

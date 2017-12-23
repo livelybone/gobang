@@ -7,6 +7,8 @@ var enter = require('./controller/enter-controller');
 var leave = require('./controller/leave-controller');
 var chess = require('./controller/chess-controller');
 var invite = require('./controller/invite-controller');
+var refuse = require('./controller/refuse-controller');
+var accept = require('./controller/accept-controller');
 var listenInvited = require('./controller/listen-invited-controller');
 var match = require('./controller/match-controller');
 var listenPlayer = require('./controller/listen-player-controller');
@@ -16,6 +18,8 @@ module.exports = [
   leave,
   chess,
   invite,
+  refuse,
+  accept,
   listenInvited,
   match,
   listenPlayer

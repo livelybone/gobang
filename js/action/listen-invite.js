@@ -5,7 +5,7 @@
 define(['utils/api'], function (api) {
   function listenInvite(callback) {
     // 建立长轮询
-    api.get('/get/invite', function (data, status, xhr) {
+    api.get('/get/invite', {},function (data, status, xhr) {
       try {
         if (callback) callback(data, status, xhr);
 
@@ -15,6 +15,8 @@ define(['utils/api'], function (api) {
       } catch (e) {
         console.error(e);
       }
+    }, function () {
+      listenInvite(callback)
     })
   }
 

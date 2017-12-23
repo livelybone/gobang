@@ -4,7 +4,7 @@
  */
 
 // 在服务器中的所有玩家，玩家属性：
-// name, finger(id),role(阵营),opponent(对手信息：name、finger、role),
+// name, finger(id), role(阵营), opponent(对手信息：name、finger、role), chessboard(棋盘，落子信息),
 // listenHandler(用于监听其他玩家的进出),
 // chessHandler(用于监听对手下棋),
 // inviteHandlers(用于监听我邀请的结果，可能有多个handler)
@@ -25,7 +25,7 @@ http.createServer(function (req, res) {
     'Access-Control-Allow-Origin': '*'
   });
 
-  console.log(url.pathname,req.method);
+  console.log(url.pathname, req.method);
   routes.find(function (route) {
     if (url.pathname === route.route && req.method === route.method) {
       route.controller(req, res);
@@ -37,15 +37,3 @@ http.createServer(function (req, res) {
 }).on('error', function (e) {
   console.error(e);
 });
-
-function Routes() {
-  return [
-    {route: '/enter', tip: '欢迎进入我的五子棋'},
-    {route: '/listen/players', tip: '监听玩家进入退出', pending: true, type: 'player'},
-    {route: '/invite', tip: '邀请游戏', pending: true, type: 'wait-for-accept'},
-    {route: '/accept', tip: '接受邀请'},
-    {route: '/chess', tip: '下棋', pending: true, type: 'chess'},
-    {route: '/give-up', tip: '投降'},
-    {route: '/leave', tip: '离开游戏'}
-  ];
-}

@@ -36,6 +36,8 @@ define(['jquery', 'utils/utils'], function (jquery, utils) {
         for (var j = 0; j < 15; j++) {
           // 0表示未被占位，1表示被黑子占位，2表示被白子占位
           this.coordinates[i][j] = 0;
+
+          // 权重
           this.winWeights.black[i][j] = 0;
           this.winWeights.white[i][j] = 0;
         }

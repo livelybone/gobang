@@ -10,35 +10,39 @@ define(['config/config', 'jquery'], function (config, $) {
       setCookie('finger', this.finger);
     }
 
-    $.ajaxSetup({
-      error: function (xhr, errorMsg, exception) {
-        console.error({xhr: xhr, errorMsg: errorMsg, exception: exception});
-      }
-    });
+    this.errorFn = null;
+    var that = this;
 
-    this.get = function get() {
-      var url = arguments[0], body = {}, callback;
-      if (arguments.length === 2) {
-        callback = arguments[1];
-      } else if (arguments.length >= 3) {
-        body = arguments[1];
-        callback = arguments[2];
-      }
-      $.get(config.backendUrl + url, $.extend(body, {finger: this.finger}), function (data, textStatus, jqXHR) {
-        if (callback) callback(parse(data));
+    this.get = function get(url, body, callback, errorFn) {
+      $.ajax({
+        type: 'GET',
+        url: config.backendUrl + url,
+        data: $.extend(body, {finger: this.finger}),
+        success: function (data, textStatus, jqXHR) {
+          if (callback) callback(parse(data));
+        },
+        error: function (xhr, errorMsg, exception) {
+          console.error({xhr: xhr, errorMsg: errorMsg, exception: exception});
+          if (errorFn) errorFn(xhr, errorMsg, exception);
+          if (that.errorFn) that.errorFn(xhr, errorMsg, exception);
+        }
       });
     };
 
-    this.post = function post() {
-      var url = arguments[0], body = {}, callback;
-      if (arguments.length === 2) {
-        callback = arguments[1];
-      } else if (arguments.length >= 3) {
-        body = arguments[1];
-        callback = arguments[2];
-      }
-      $.post(config.backendUrl + url, $.extend(body, {finger: this.finger}), function (data, textStatus, jqXHR) {
-        if (callback) callback(parse(data));
+    this.post = function post(url, body, callback, errorFn) {
+      console.log($.extend(body, {finger: this.finger}));
+      $.ajax({
+        type: 'POST',
+        url: config.backendUrl + url,
+        data: $.extend(body, {finger: this.finger}),
+        success: function (data, textStatus, jqXHR) {
+          if (callback) callback(parse(data));
+        },
+        error: function (xhr, errorMsg, exception) {
+          console.error({xhr: xhr, errorMsg: errorMsg, exception: exception});
+          if (errorFn) errorFn(xhr, errorMsg, exception);
+          if (that.errorFn) that.errorFn(xhr, errorMsg, exception);
+        }
       });
     }
   }

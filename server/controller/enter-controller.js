@@ -10,12 +10,9 @@ exports.route = '/enter';
 exports.controller = function (req, res) {
   getFinger(req, function (finger) {
     "use strict";
-    console.log(finger);
     var player1 = players.find(function (player) {
-      console.log(player.finger, finger, player.finger === finger);
       return player.finger === finger
     });
-    console.log(!!player1, player1 && player1.finger);
     if (!player1) {
       var player2 = {finger: finger};
       players.map(function (p) {
@@ -39,9 +36,6 @@ exports.controller = function (req, res) {
       }
     });
     // console.log(players.length, p);
-    res.end(JSON.stringify({
-      players: p,
-      isNew: true
-    }));
+    res.end(JSON.stringify({players: p, isNew: true}));
   });
 };

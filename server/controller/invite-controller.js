@@ -13,6 +13,8 @@ exports.controller = function (req, res) {
     // console.log(data);
     var finger = data.data.finger, opponentFinger = data.data.opponentFinger;
 
+    if (players.length < 2) return;
+
     players.map(function (player) {
       // 给opponent发送邀请
       if (player.finger === opponentFinger) {

@@ -7,12 +7,14 @@ require.config({
   }
 });
 
-requirejs.onError = err;
+requirejs.onError = function err(error) {
+  console.error(error);
+};
 
-require(['jquery', 'action/chess', 'action/action', 'utils/api'], function (jQuery, Chess, action, api) {
+require(['jquery', 'play', 'action/action', 'utils/api'], function (jQuery, Play, action, api) {
   console.log('jQuery version: ' + jQuery().jquery);
   window['finger'] = api.finger;
-  window['chessboard'] = new Chess();
+  window['chessboard'] = new Play();
   chessboard.init();
   $('#black').bind('click', begin.bind(null, 'black'));
   $('#white').bind('click', begin.bind(null, 'white'));
@@ -25,7 +27,7 @@ require(['jquery', 'action/chess', 'action/action', 'utils/api'], function (jQue
       "use strict";
       if (data) {
         console.log('new player', data);
-        animation(data.player, data.enterOrLeave);
+        inOut(data.player, data.enterOrLeave);
         if (data.refresh) renderPlayer(data.player);
       }
     });
@@ -40,17 +42,40 @@ require(['jquery', 'action/chess', 'action/action', 'utils/api'], function (jQue
     })
   });
 
-  function animation(player, enterOrLeave) {
+  function refused(opponent) {
+    broadcastAnimation($(
+      '<span class=\'red\'>' + getName(opponent) + '</span><span>残忍的拒绝了你的邀请</span>'
+    ))
+  }
+
+  function accepted(opponent, myRole) {
+    chessboard.restart();
+    begin(myRole, opponent);
+  }
+
+  function inOut(player, enterOrLeave) {
+    var html;
+    if (enterOrLeave === 'enter')
+      html = $(
+        '<span class=\'blue\'>' + getName(player) + '</span><span>进入了我们的五子棋世界</span>'
+      );
+    else
+      html = $(
+        '<span class=\'red\'>' + getName(player) + '</span><span>离开了</span>'
+      );
+    broadcastAnimation(html)
+  }
+
+  function broadcastAnimation(html) {
     "use strict";
     var broadcast = $('#broadcast');
-    if (enterOrLeave === 'enter')
-      broadcast.html($(
-        '<span class=\'blue\'>' + getName(player) + '</span>进入了我们的五子棋世界'
-      ));
-    else
-      broadcast.html($(
-        '<span class=\'red\'>' + getName(player) + '</span>离开了'
-      ))
+    broadcast.css({position: 'relative', top: '25px', opacity: 0});
+    broadcast.html(html);
+    broadcast.animate({top: 0, opacity: 1}, 'slow', function () {
+      setTimeout(function () {
+        broadcast.animate({top: '-25px', opacity: 0})
+      }, 1000);
+    });
   }
 
   function renderOverlay(player) {
@@ -72,29 +97,35 @@ require(['jquery', 'action/chess', 'action/action', 'utils/api'], function (jQue
       action.refuse(player.finger);
     });
     overlay.find('#accept').bind('click', function () {
-      action.accept(player.finger)
+      action.accept(player.finger, function (data) {
+        if (data.match === 'FAILED') matchFailed(data.opponent);
+        else if (data.match === 'SUCCESS') accepted(data.opponent, data.role);
+      })
     });
     $(document.body).append(overlay);
   }
 
-  function renderOverlayTip(player, win) {
+  function renderOverlayTip(tip, btnText, win, finger) {
     "use strict";
     var overlayTip = $(
       '<div id="overlay-tip">\n' +
       '  <div class="float-win">\n' +
-      '    <h1 class="float-title" id="result">' + (win ? 'Wao! 你赢啦' : 'Opps! ' + getName(player) + '把虐你成XX啦') + '</h1>\n' +
+      '    <h1 class="float-title" id="result">' + tip + '</h1>\n' +
       '    <div class="float-btn-group">\n' +
-      '      <button class=\'float-btn\' id="ok">' + (win ? '朕知道了' : 'WoW! 逃') + '</button>\n' +
+      '      <button class=\'float-btn\' id="ok">' + btnText + '</button>\n' +
       '    </div>\n' +
       '  </div>\n' +
       '</div>'
     );
     overlayTip.find('button#ok').bind('click', removeOverlay.bind(null, '#overlay-tip'));
-    if (!win) {
+    if (win === false && finger) {
       overlayTip.find('div.float-btn-group').append($('<button class=\'float-btn\' id="again">不服，再战！</button>\n'));
       overlayTip.find('#again').bind('click', removeOverlay.bind(null, '#overlay-tip'));
       overlayTip.find('#again').bind('click', function () {
-        action.invite(player.finger);
+        action.invite(finger, function (data) {
+          if (data.match === 'REFUSE') refused(data.opponent);
+          if (data.match === 'SUCCESS') accepted(data.opponent, data.role);
+        });
       });
     }
     $(document.body).append(overlayTip);
@@ -130,44 +161,50 @@ require(['jquery', 'action/chess', 'action/action', 'utils/api'], function (jQue
       '</div>'
     );
     div.find('button.chess-btn').bind('click', function () {
-      action.invite(player.finger);
+      action.invite(player.finger, function (data) {
+        if (data.match === 'REFUSE') refused(data.opponent);
+        if (data.match === 'SUCCESS') accepted(data.opponent, data.role);
+      });
     });
     $('#players').append(div);
   }
 
   function getName(player) {
     "use strict";
-    return player.name || ('玩家' + (player.finger.slice(-9, -1) * 10000))
+    return player.name || ('玩家' + (player.finger.slice(-6, -1) + player.finger.slice(0).split('').pop()).split('.').join(''))
+  }
+
+  function removeOverlay(selector) {
+    "use strict";
+    console.log(selector, 'remove');
+    $(selector).remove();
+  }
+
+  function begin(role, opponent) {
+    var roles = [
+      {name: 'You', isComputer: false},
+      {name: 'Computer', isComputer: true}
+    ];
+    roles[0].finger = api.finger;
+    if (opponent) {
+      roles[1].name = getName(opponent);
+      roles[1].isComputer = false;
+      roles[1].finger = opponent.finger;
+    }
+    var roleBlack = role === 'black' ? roles[0] : roles[1], roleWhite = role === 'white' ? roles[0] : roles[1];
+    chessboard.gameStart(roleBlack, roleWhite);
+    $('#black').hide();
+    $('#white').hide();
+    $('#tip').hide();
+    $('#restart').show();
+  }
+
+  function restart() {
+    chessboard.restart();
+    $('#black').show();
+    $('#white').show();
+    $('#tip').show();
+    $('#restart').hide();
   }
 });
 
-function removeOverlay(selector) {
-  "use strict";
-  console.log(selector, 'remove')
-  $(selector).remove();
-}
-
-function begin(role) {
-  var roles = [
-    {name: 'You', isComputer: false},
-    {name: 'Computer', isComputer: true}
-  ];
-  var roleBlack = role === 'black' ? roles[0] : roles[1], roleWhite = role === 'white' ? roles[0] : roles[1];
-  chessboard.gameStart(roleBlack, roleWhite);
-  $('#black').hide();
-  $('#white').hide();
-  $('#tip').hide();
-  $('#restart').show();
-}
-
-function restart() {
-  chessboard.restart();
-  $('#black').show();
-  $('#white').show();
-  $('#tip').show();
-  $('#restart').hide();
-}
-
-function err(error) {
-  console.error(error);
-}

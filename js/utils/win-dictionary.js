@@ -29,7 +29,7 @@ define(function () {
           ];
           winDictionary.push(groupOrdinate);
 
-          if (abscissa > 5) {
+          if (abscissa >= 4) {
             // 左斜线赢法
             var groupDiagonalLeft = [
               {abscissa: abscissa, ordinate: ordinate},
