@@ -71,13 +71,14 @@ function matched(me, opponent, myRes) {
   me.inviteHandlers = null;
 
   // 删除双方的listenInvitedHandle
-  console.log(opponent.listenInvitedHandle && opponent.listenInvitedHandle.res ? 'have listenInvitedHandle' : '')
-  if (opponent.listenInvitedHandle && opponent.listenInvitedHandle.res)
-    opponent.listenInvitedHandle.res.end('chess');
-  if (me.listenInvitedHandle && me.listenInvitedHandle.res)
-    me.listenInvitedHandle.res.end('chess');
-  opponent.listenInvitedHandle = null;
-  me.listenInvitedHandle = null;
+  console.log(opponent.listenInvitedHandler && opponent.listenInvitedHandler.res ? 'have listenInvitedHandler' : '');
+  console.log(me.listenInvitedHandler && me.listenInvitedHandler.res ? 'have listenInvitedHandler' : '');
+  if (opponent.listenInvitedHandler && opponent.listenInvitedHandler.res)
+    opponent.listenInvitedHandler.res.end('chess');
+  if (me.listenInvitedHandler && me.listenInvitedHandler.res)
+    me.listenInvitedHandler.res.end('chess');
+  opponent.listenInvitedHandler = null;
+  me.listenInvitedHandler = null;
 
   // 删除双方的matchHandler
   if (opponent.matchHandler && opponent.matchHandler.res)

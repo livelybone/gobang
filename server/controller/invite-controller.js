@@ -18,7 +18,7 @@ exports.controller = function (req, res) {
     players.map(function (player) {
       // 给opponent发送邀请
       if (player.finger === opponentFinger) {
-        var res1 = player.listendInvitedHandler && player.listendInvitedHandler.res;
+        var res1 = player.listenInvitedHandler && player.listenInvitedHandler.res;
         res1.end(JSON.stringify({player: {finger: finger}, type: 'invite'}));
         return
       }

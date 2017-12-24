@@ -14,10 +14,11 @@ define(['config/config', 'jquery'], function (config, $) {
     var that = this;
 
     this.get = function get(url, body, callback, errorFn) {
+      var data = $.extend(body, {finger: this.finger});
       $.ajax({
         type: 'GET',
         url: config.backendUrl + url,
-        data: $.extend(body, {finger: this.finger}),
+        data: data,
         success: function (data, textStatus, jqXHR) {
           if (callback) callback(parse(data));
         },
@@ -30,11 +31,11 @@ define(['config/config', 'jquery'], function (config, $) {
     };
 
     this.post = function post(url, body, callback, errorFn) {
-      console.log($.extend(body, {finger: this.finger}));
+      var data = $.extend(body, {finger: this.finger});
       $.ajax({
         type: 'POST',
         url: config.backendUrl + url,
-        data: $.extend(body, {finger: this.finger}),
+        data: data,
         success: function (data, textStatus, jqXHR) {
           if (callback) callback(parse(data));
         },

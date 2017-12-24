@@ -15,7 +15,7 @@ exports.controller = function (req, res) {
     // 给自己添加listenInvitedHandler
     players.find(function (player) {
       if (player.finger === finger) {
-        player.listendInvitedHandler = {res: res};
+        player.listenInvitedHandler = {res: res};
         return true;
       }
     })

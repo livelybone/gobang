@@ -34,7 +34,7 @@ require(['jquery', 'play', 'action/action', 'utils/api'], function (jQuery, Play
 
     action.listenInvite(function (data) {
       "use strict";
-      if (data) {
+      if (data.type==='invite') {
         console.log('be invited', data);
 
         renderOverlay(data.player);
@@ -98,6 +98,7 @@ require(['jquery', 'play', 'action/action', 'utils/api'], function (jQuery, Play
     });
     overlay.find('#accept').bind('click', function () {
       action.accept(player.finger, function (data) {
+        console.log(data);
         if (data.match === 'FAILED') matchFailed(data.opponent);
         else if (data.match === 'SUCCESS') accepted(data.opponent, data.role);
       })
@@ -162,6 +163,7 @@ require(['jquery', 'play', 'action/action', 'utils/api'], function (jQuery, Play
     );
     div.find('button.chess-btn').bind('click', function () {
       action.invite(player.finger, function (data) {
+        console.log(data);
         if (data.match === 'REFUSE') refused(data.opponent);
         if (data.match === 'SUCCESS') accepted(data.opponent, data.role);
       });

@@ -14,6 +14,7 @@ exports.controller = function (req, res) {
       var finger = data.data.finger, chessboard = data.data.chessboard, pos = data.data.pos;
 
       console.log(chessboard);
+      console.log(typeof chessboard);
 
       if (players.length < 2) return;
 
@@ -55,9 +56,8 @@ function judge(chessboard, pos, myRole) {
   var rolePieces = [];
   chessboard.map(function (x, abscissa) {
     x.map(function (y, ordinate) {
-      // 0表示未被占位，1表示被黑子占位，2表示被白子占位
-      var r = y === 1 ? 'black' : y === 2 ? 'white' : '';
-      if (r === myRole) {
+      // 0表示未被占位
+      if (y === myRole) {
         rolePieces.push({abscissa: abscissa, ordinate: ordinate});
       }
     })
