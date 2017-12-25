@@ -1,7 +1,7 @@
 /**
  * Created by Livelybone on 2017-12-17.
  */
-define(['component/player', 'component/chessboard', 'utils/win-dictionary', 'component/role'], function (Player, chessboard, winDictionary, Role) {
+define(['component/player/player', 'component/chessboard/chessboard', 'utils/win-dictionary', 'component/player/role'], function (Player, chessboard, winDictionary, Role) {
   function Computer(name, role) {
     // opponent: Player实例化对象
 

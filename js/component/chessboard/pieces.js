@@ -1,7 +1,7 @@
 /**
  * Created by Livelybone on 2017-12-17.
  */
-define(['component/chessboard', 'component/pop-up'], function (chessboard, popup) {
+define(['component/chessboard/chessboard', 'component/chessboard/pop-up'], function (chessboard, popup) {
   function Pieces(role) {
     // 棋子30px*30px
     this.pieceWidth = 30;
@@ -16,6 +16,7 @@ define(['component/chessboard', 'component/pop-up'], function (chessboard, popup
         popup.animation("Don't play<br/>at the same place", 500);
         return false;
       }
+
 
       var piece = document.createElement('img'), pos = this.coordinateConvertToPos(coordinate);
       piece.src = this.src;

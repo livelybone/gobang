@@ -3,18 +3,15 @@
  * Node Server
  */
 
-var getData = require('../utils/get-data'), winDictionary = require('../utils/win-dictionary');
+var getData = require('../utils/get-data'), winDictionary = require('../utils/win-dictionary'),
+  initPlayer = require('../utils/init-player');
 
 exports.method = 'POST';
 exports.route = '/chess';
 exports.controller = function (req, res) {
   "use strict";
   getData(req, function (data) {
-      console.log(data);
-      var finger = data.data.finger, chessboard = data.data.chessboard, pos = data.data.pos;
-
-      console.log(chessboard);
-      console.log(typeof chessboard);
+      var finger = data.data.finger, chessboard = data.data.chessboard, pos = data.data.pos, role = data.role;
 
       if (players.length < 2) return;
 
@@ -36,14 +33,19 @@ exports.controller = function (req, res) {
       // 给对手发送棋子位置，并清除对手的chessHandler，如果没结束，保存棋盘
 
       var res1 = opponent.chessHandler && opponent.chessHandler.res;
-      res1.end(JSON.stringify({pos: pos, gameOver: win, winner: win ? {finger: finger, role: me.role} : ''}));
-      opponent.chessHandler = null;
+      if (res1) res1.end(JSON.stringify({
+        pos: pos,
+        gameOver: win,
+        winner: win ? {finger: finger, role: me.role} : '',
+        role: role
+      }));
+      initPlayer(opponent);
       if (!win) opponent.chessboard = chessboard;
 
       // 如果自己赢了，返回结果，否则不返回，给自己添加chessHandler，并保存棋盘
       if (win) {
-        res.end({gameOver: win, winner: win ? {finger: finger, role: me.role} : ''});
-        me.chessHandler = null;
+        res.end(JSON.stringify({gameOver: win, winner: win ? {finger: finger, role: me.role} : ''}));
+        initPlayer(me);
       } else {
         me.chessHandler = {res: res};
         me.chessboard = chessboard;

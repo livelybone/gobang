@@ -1,7 +1,7 @@
 /**
  * Created by Livelybone on 2017-12-17.
  */
-define(['utils/api', 'component/chessboard', 'component/pieces', 'component/role', 'utils/win-dictionary', 'utils/utils'], function (api, chessboard, Pieces, Role, winDictionary, utils) {
+define(['utils/api', 'component/chessboard/chessboard', 'component/chessboard/pieces', 'component/player/role', 'utils/win-dictionary', 'utils/utils'], function (api, chessboard, Pieces, Role, winDictionary, utils) {
   function Player(name, role, finger) {
     this.name = name;
     this.finger = finger;
@@ -56,8 +56,8 @@ define(['utils/api', 'component/chessboard', 'component/pieces', 'component/role
       }),
       oppGroups = groups.filter(function (group) {
         return group.filter(function (p) {
-            return chessboard.coordinates[p.abscissa][p.ordinate] === that.role;
-          }).length <= 1;
+          return chessboard.coordinates[p.abscissa][p.ordinate] === that.role;
+        }).length <= 1;
       });
 
     // 计算权重，数值越大权重越大
@@ -135,12 +135,12 @@ define(['utils/api', 'component/chessboard', 'component/pieces', 'component/role
     // 计算落子相对于棋盘的坐标
     var abscissa = 0, ordinate = 0;
     while (!(this.pieces.calcPos(abscissa) + (abscissa > 0 ? -chessboard.cellWidth / 2 - chessboard.lineWidth : -chessboard.borderWidth) <= relPos.x
-    && this.pieces.calcPos(abscissa) + (abscissa === chessboard.lineCount - 1 ? 0 : +chessboard.cellWidth / 2) > relPos.x)) {
+      && this.pieces.calcPos(abscissa) + (abscissa === chessboard.lineCount - 1 ? 0 : +chessboard.cellWidth / 2) > relPos.x)) {
       abscissa += 1;
       if (abscissa > chessboard.lineCount - 1) break;
     }
     while (!(this.pieces.calcPos(ordinate) + (ordinate > 0 ? -chessboard.cellWidth / 2 - chessboard.lineWidth : -chessboard.borderWidth) <= relPos.y
-    && this.pieces.calcPos(ordinate) + (ordinate === chessboard.lineCount - 1 ? 0 : +chessboard.cellWidth / 2) > relPos.y)) {
+      && this.pieces.calcPos(ordinate) + (ordinate === chessboard.lineCount - 1 ? 0 : +chessboard.cellWidth / 2) > relPos.y)) {
       ordinate += 1;
       if (ordinate > chessboard.lineCount - 1) break;
     }

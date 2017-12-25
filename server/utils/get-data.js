@@ -7,7 +7,6 @@ module.exports = function getData(req, callback) {
     data += chunk;
   });
   req.on('end', function () {
-    console.log(data);
     postData = Object.assign({}, querystring.parse(data));
 
     urlData = dataDeal(urlData);
@@ -23,7 +22,7 @@ module.exports = function getData(req, callback) {
 
 function dataDeal(data) {
 
-  var reg = /(^{.*}$)|(^\[.*\]$)/g;
+  var reg = /(^{.*}$)|(^\[.*\]$)/;
   for (var key in data) {
     if (data.hasOwnProperty(key)) {
       try {

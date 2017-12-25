@@ -5,10 +5,10 @@ define(function () {
   function Role() {
     this.black = 'black';
     this.white = 'white';
-    this.currentPlayer = this.black;
+    this.currentRole = this.black;
 
     this.init = function () {
-      this.currentPlayer = this.black;
+      this.currentRole = this.black;
     }
   }
 

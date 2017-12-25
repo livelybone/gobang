@@ -54,10 +54,8 @@ define(['config/config', 'jquery'], function (config, $) {
     try {
       d = JSON.parse(data);
     } catch (e) {
-      console.log(e);
       d = data;
     }
-    console.log(d);
     return d;
   }
 

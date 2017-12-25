@@ -10,7 +10,6 @@ exports.route = '/accept';
 exports.controller = function (req, res) {
   "use strict";
   getData(req, function (data) {
-    console.log(data);
     var finger = data.data.finger, opponentFinger = data.data.opponentFinger;
 
     var me = players.find(function (player) {
@@ -24,7 +23,6 @@ exports.controller = function (req, res) {
       // 如果对方已匹配
       res.end(JSON.stringify({match: 'FAILED', msg: '已经开始游戏', opponent: {finger: opponent.finger}}))
     } else {
-      console.log(1);
       matched(me, opponent, res);
     }
   })
@@ -61,9 +59,7 @@ function matched(me, opponent, myRes) {
   });
 
   // 返回匹配结果
-  console.log(10);
   myRes.end(JSON.stringify({opponent: {finger: opponent.finger, role: role[1]}, match: 'SUCCESS', role: role[0]}));
-  console.log(11);
 
 
   // 删除双方的inviteHandlers
@@ -71,8 +67,6 @@ function matched(me, opponent, myRes) {
   me.inviteHandlers = null;
 
   // 删除双方的listenInvitedHandle
-  console.log(opponent.listenInvitedHandler && opponent.listenInvitedHandler.res ? 'have listenInvitedHandler' : '');
-  console.log(me.listenInvitedHandler && me.listenInvitedHandler.res ? 'have listenInvitedHandler' : '');
   if (opponent.listenInvitedHandler && opponent.listenInvitedHandler.res)
     opponent.listenInvitedHandler.res.end('chess');
   if (me.listenInvitedHandler && me.listenInvitedHandler.res)

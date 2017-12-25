@@ -2,7 +2,7 @@
  * Created by Livelybone on 2017-12-17.
  */
 
-define(['utils/api', 'action/action', 'component/chessboard', 'component/role', 'component/player', 'component/computer', 'component/pop-up', 'utils/win-dictionary', 'component/overlay-tip'],
+define(['utils/api', 'action/action', 'component/chessboard/chessboard', 'component/player/role', 'component/player/player', 'component/player/computer', 'component/chessboard/pop-up', 'utils/win-dictionary', 'component/overlay-tip'],
   function (api, action, chessboard, role, Player, Computer, popup, winDictionary, overlayTip) {
     function Play() {
       // 同步实现
@@ -11,6 +11,8 @@ define(['utils/api', 'action/action', 'component/chessboard', 'component/role', 
       var that = this;
 
       this.players = {black: null, white: null};
+      this.me = null;
+      this.opponent = null;
       this.timmer = null;
 
       this.init = function () {
@@ -18,14 +20,16 @@ define(['utils/api', 'action/action', 'component/chessboard', 'component/role', 
         popup.init();
       };
 
-      this.gameStart = function (roleBlack, roleWhite) {
+      this.gameStart = function (me, opponent) {
         // 初始化棋手
-        this.players.white = roleWhite.isComputer ? new Computer(roleWhite.name, 'white') : new Player(roleWhite.name, 'white', roleWhite.finger);
-        this.players.black = roleBlack.isComputer ? new Computer(roleBlack.name, 'black') : new Player(roleBlack.name, 'black', roleBlack.finger);
+        this.me = new Player(me.name, me.role, me.finger);
+        this.opponent = opponent.isComputer ? new Computer(opponent.name, opponent.role) : new Player(opponent.name, opponent.role, opponent.finger);
+        this.players.black = this.me.role === 'black' ? this.me : this.opponent;
+        this.players.white = this.me.role === 'white' ? this.me : this.opponent;
 
-        var currentPlayer = that.players[role.currentPlayer];
+        var currentPlayer = this.players[role.currentRole];
 
-        if (roleBlack.isComputer || roleWhite.isComputer)
+        if (opponent.isComputer)
           popup.animation('Game start!' + (currentPlayer.finger === api.finger ? '<br>You first!' : ''), 1000, function () {
             if (currentPlayer.isComputer) {
               currentPlayer.chess();
@@ -36,7 +40,7 @@ define(['utils/api', 'action/action', 'component/chessboard', 'component/role', 
         else
           popup.animation('Game start!' + (currentPlayer.finger === api.finger ? '<br>You first!' : ''), 1000, function () {
             if (currentPlayer.finger !== api.finger) {
-              action.chess('', '', chessCallback)
+              chessAction('', '', 'white');
             } else {
               that.addClickFn();
             }
@@ -45,7 +49,7 @@ define(['utils/api', 'action/action', 'component/chessboard', 'component/role', 
 
       this.gameOver = function () {
         // this.removeClickFn();
-        overlayTip.winOrNot(this.players[role.currentPlayer], !this.players[role.currentPlayer].isComputer)
+        overlayTip.winOrNot(this.players[role.currentRole], !this.players[role.currentRole].isComputer)
       };
 
       this.restart = function () {
@@ -58,17 +62,16 @@ define(['utils/api', 'action/action', 'component/chessboard', 'component/role', 
       };
 
       this.clickFn = function clickFn(ev) {
-        var currentPlayer = that.players[role.currentPlayer];
+        var currentPlayer = that.opponent.isComputer ? that.players[role.currentRole] : that.me;
 
         var toNext = currentPlayer.chess(ev);
         that.removeClickFn();
 
         if (toNext) {
-          if (that.players.black.isComputer || that.players.white.isComputer) {
+          if (that.opponent.isComputer) {
             // 人机对战
             var isGameOver = that.judge();
-
-            currentPlayer = that.players[role.currentPlayer];
+            currentPlayer = that.players[role.currentRole];
             if (!isGameOver && currentPlayer.isComputer) {
               that.timmer = setTimeout(function () {
                 toNext = currentPlayer.chess();
@@ -78,10 +81,11 @@ define(['utils/api', 'action/action', 'component/chessboard', 'component/role', 
                 }
               }, Math.random() * 1000);
             }
-          } else {
+          }
+          else {
             // 双人对弈
             var piece = currentPlayer.pieces.piecesArr.slice(0).pop();
-            action.chess(chessboard.coordinates, {abscissa: piece.abscissa, ordinate: piece.ordinate}, chessCallback)
+            chessAction(chessboard.coordinates, {abscissa: piece.abscissa, ordinate: piece.ordinate}, that.me.role)
           }
         } else {
           that.addClickFn();
@@ -97,7 +101,7 @@ define(['utils/api', 'action/action', 'component/chessboard', 'component/role', 
       };
 
       this.judge = function () {
-        var rolePieces = this.players[role.currentPlayer].pieces.piecesArr;
+        var rolePieces = this.players[role.currentRole].pieces.piecesArr;
         if (rolePieces.length < 5) {
           // 棋子少于5，不判断
           toggle();
@@ -133,20 +137,31 @@ define(['utils/api', 'action/action', 'component/chessboard', 'component/role', 
 
       function toggle() {
         // 换手
-        role.currentPlayer = role.currentPlayer === role.black ? role.white : role.black;
+        role.currentRole = role.currentRole === role.black ? role.white : role.black;
       }
 
       function chessCallback(data) {
-        var currentPlayer = that.players[role.currentPlayer];
         if (!data.gameOver) {
           if (data.pos) {
-            currentPlayer.pieces.createPiece(pos);
+            that.opponent.pieces.createPiece(data.pos);
           }
           that.addClickFn();
-          toggle();
         } else {
-          overlayTip.winOrNot(data.winner, data.winner.finger === api.finger)
+          overlayTip.winOrNot(data.winner, data.winner.finger === api.finger);
+          action.listenInvite(function (data) {
+            "use strict";
+            if (data.type === 'invite') {
+              renderOverlay(data.player);
+            }
+          })
         }
+      }
+
+      function chessAction(chessboard, pos, role) {
+        "use strict";
+        action.chess(chessboard, pos, role, function (data) {
+          chessCallback(data);
+        })
       }
     }
 

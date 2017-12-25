@@ -1,7 +1,7 @@
 /**
  * Created by Livelybone on 2017-12-17.
  */
-define(['component/chessboard'], function (chessboard) {
+define(['component/chessboard/chessboard'], function (chessboard) {
   function Popup() {
     this.init = function () {
       var floatWin = document.getElementById('game-tip');

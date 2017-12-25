@@ -42,7 +42,7 @@ button {
     padding: 20px 0 0;
 }
 
-#black, #white, #restart {
+.black, .white, .green {
     width: 80px;
     height: 30px;
     margin: 0 20px 0 0;
@@ -51,27 +51,27 @@ button {
     opacity: .8;
 }
 
-#black:hover, #white:hover, #restart:hover {
+.black:hover, .white:hover, .green:hover {
     opacity: 1;
 }
 
-#black {
+.black {
     background: #333;
     color: #fff;
 }
 
-#white {
+.white {
     border: 1px solid #666;
     background: #fff;
     color: #333;
 }
 
-#restart {
+.green {
     background: #00c76f;
     color: #fff;
 }
 
-#black {
+.black {
 
 }
 
