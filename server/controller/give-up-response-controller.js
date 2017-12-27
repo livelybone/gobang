@@ -6,7 +6,7 @@
 var getData = require('../utils/get-data'), initPlayer = require('../utils/init-player');
 
 exports.method = 'POST';
-exports.route = '/give-up/accept';
+exports.route = '/give-up/response';
 exports.controller = function (req, res) {
   "use strict";
   getData(req, function (data) {
@@ -19,7 +19,7 @@ exports.controller = function (req, res) {
         return player.opponent.finger === finger
       });
 
-    var res1 = opponent.listenGiveUpReponseHandler && opponent.listenGiveUpReponseHandler.res;
+    var res1 = opponent.listenGiveUpResponseHandler && opponent.listenGiveUpResponseHandler.res;
     if (accept) {
       // 接受，我赢了
       if (res1)
@@ -36,5 +36,8 @@ exports.controller = function (req, res) {
 
       res.end(JSON.stringify({gameOver: false, winner: '', player: {finger: me.finger, role: me.role}}));
     }
+
+    // 初始化 listenGiveUpResponseHandler
+    opponent.listenGiveUpResponseHandler = null;
   })
 };

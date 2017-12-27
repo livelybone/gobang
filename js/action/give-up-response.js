@@ -3,8 +3,8 @@
  */
 
 define(['utils/api'], function (api) {
-  function giveUpAccept(accept, callback) {
-    api.post('/give-up/accept', {accept: accept}, function (data, status, xhr) {
+  function giveUpResponse(accept, callback) {
+    api.post('/give-up/response', {accept: accept}, function (data, status, xhr) {
       try {
         if (callback) callback(data, status, xhr)
       } catch (e) {
@@ -13,5 +13,5 @@ define(['utils/api'], function (api) {
     })
   }
 
-  return giveUpAccept;
+  return giveUpResponse;
 });

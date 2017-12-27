@@ -4,4 +4,6 @@ module.exports = function initPlayer(player) {
   player.role = null;
   player.chessHandle = null;
   player.chessboard = null;
+  player.listenGiveUpHandler = null;
+  player.listenWithdrawHandler = null;
 };

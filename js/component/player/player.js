@@ -9,10 +9,6 @@ define(['utils/api', 'component/chessboard/chessboard', 'component/chessboard/pi
     this.pieces = new Pieces(this.role);
   }
 
-  Player.prototype.waitOpponent = function () {
-
-  };
-
   Player.prototype.chess = function (ev, callback) {
     var clickDot = {x: ev.clientX, y: ev.clientY};
     clickDot = this.getRelativePos(clickDot);
@@ -20,6 +16,7 @@ define(['utils/api', 'component/chessboard/chessboard', 'component/chessboard/pi
     // 判断是否在棋盘内
     if (clickDot.x >= chessboard.margin && clickDot.x <= (chessboard.width - chessboard.margin)
       && clickDot.y >= chessboard.margin && clickDot.y <= (chessboard.width - chessboard.margin)) {
+
       // 找到对应的横纵坐标，并落子
       var coordinate = this.convertCoordinate(clickDot);
       var toNext = this.pieces.createPiece(coordinate);

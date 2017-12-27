@@ -8,25 +8,29 @@ define([
     'action/chess',
     'action/listen-player',
     'action/listen-invite',
-    'action/refuse',
-    'action/accept',
+    'action/invite-response',
     'action/match',
     'action/give-up',
     'action/listen-give-up',
-    'action/give-up-accept'
+    'action/give-up-response',
+    'action/listen-withdraw',
+    'action/withdraw',
   ],
-  function (getPlayers, invite, chess, listenPlayer, listenInvite, refuse, accept, match, giveUp, giveUpListen, giveUpAccept) {
+  function (getPlayers, invite, chess, listenPlayer, listenInvite, inviteResponse, match, giveUp, giveUpListen, giveUpResponse, listenWithdraw, withdraw) {
     return {
       getPlayers: getPlayers,
       invite: invite,
       chess: chess,
       listenPlayer: listenPlayer,
       listenInvite: listenInvite,
-      refuse: refuse,
-      accept: accept,
+      inviteRefuse: inviteResponse.refuse,
+      inviteAccept: inviteResponse.accept,
       match: match,
       giveUp: giveUp,
       giveUpListen: giveUpListen,
-      giveUpAccept: giveUpAccept,
+      giveUpResponse: giveUpResponse,
+      listenWithdraw: listenWithdraw,
+      withdraw: withdraw.withdraw,
+      withdrawAccept: withdraw.withdrawResponse,
     }
   });

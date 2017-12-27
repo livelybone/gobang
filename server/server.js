@@ -12,6 +12,8 @@
 // listenInvitedHandler(用于监听其它玩家对我的邀请)
 // listenGiveUpHandler(用于监听对手的投降请求)
 // listenGiveUpResponseHandler(用于监听我的投降请求的结果)
+// listenWithdrawHandler(用于监听对手的悔棋请求)
+// listenWithdrawResponseHandler(用于监听我的悔棋请求的结果)
 global['players'] = [];
 
 // 路由控制

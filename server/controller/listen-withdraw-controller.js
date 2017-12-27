@@ -6,18 +6,17 @@
 var getFinger = require('../utils/get-finger');
 
 exports.method = 'GET';
-exports.route = '/give-up/listen';
+exports.route = '/listen/withdraw';
 exports.controller = function (req, res) {
-  "use strict";
   getFinger(req, function (finger) {
+    "use strict";
     if (players.length < 1) return;
 
-    // 给自己添加listenGiveUpHandler
+    // 刷新玩家的listenWithdrawHandler
     players.find(function (player) {
       if (player.finger === finger) {
-        player.listenGiveUpHandler = {res: res};
-        return true;
+        player.listenWithdrawHandler = {res: res};
       }
     })
-  })
+  });
 };

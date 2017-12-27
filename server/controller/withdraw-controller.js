@@ -6,7 +6,7 @@
 var getFinger = require('../utils/get-finger');
 
 exports.method = 'POST';
-exports.route = '/give-up';
+exports.route = '/withdraw';
 exports.controller = function (req, res) {
   "use strict";
   getFinger(req, function (finger) {
@@ -18,13 +18,13 @@ exports.controller = function (req, res) {
       });
 
     // 给对方发送请求
-    var res1 = opponent.listenGiveUpHandler && opponent.listenGiveUpHandler.res;
+    var res1 = opponent.listenWithdrawHandler && opponent.listenWithdrawHandler.res;
     if (res1)
-      res1.end(JSON.stringify({gameOver: false, player: {finger: me.finger, role: me.role}}));
+      res1.end(JSON.stringify({type: 'GIVEUP', player: {finger: me.finger, role: me.role}}));
 
-    me.listenGiveUpResponseHandler = {res: res};
+    me.listenWithdrawResponseHandler = {res: res};
 
-    // 初始化 listenGiveUpHandler
-    opponent.listenGiveUpHandler = null;
+    // 初始化 listenWithdrawHandler
+    opponent.listenWithdrawHandler = null;
   })
 };

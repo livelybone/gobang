@@ -32,7 +32,7 @@ require(['jquery', 'play', 'action/action', 'utils/api', 'component/overlay', 'c
       action.listenInvite(function (data) {
         "use strict";
         if (data.type === 'invite') {
-          overlay.renderOverlay(data.player);
+          overlay.inviteOverlay(data.player);
         }
       })
     });

@@ -54,9 +54,32 @@ define([
       btnGroup.append(giveUp);
     }
 
+    function withdrawBtn() {
+      "use strict";
+      var back = $('<button class="black">悔棋</button>');
+      back.on('click', function () {
+        var overlayTipHolder = overlayTip.overlayTipHolder('等待对方回应...');
+        action.withdraw(function (data) {
+          if (data.accept) {
+            // 后退一步
+            overlayTipHolder.find('#result').html('对方同意了你的请求').fadeOut('fast', function () {
+              window.chessboard.back(data.player);
+              overlayTipHolder.remove();
+            })
+          } else {
+            // 继续游戏
+            overlayTipHolder.find('#result').html('对方拒绝了你的请求').fadeOut('fast', function () {
+              overlayTipHolder.remove();
+            })
+          }
+        })
+      });
+      btnGroup.append(back);
+    }
+
+
     function giveUpBtn() {
       "use strict";
-      btnGroup.empty();
       var giveUp = $('<button class="black">投降认输</button>');
       giveUp.on('click', function () {
         action.giveUp(function (data) {
@@ -67,7 +90,7 @@ define([
             action.listenInvite(function (data) {
               "use strict";
               if (data.type === 'invite') {
-                overlay.renderOverlay(data.player);
+                overlay.inviteOverlay(data.player);
               }
             })
           } else {
@@ -77,6 +100,16 @@ define([
       });
       btnGroup.append(giveUp);
     }
+
+    function initChess(bool) {
+      "use strict";
+      if (bool !== false) {
+        btnGroup.empty();
+        giveUpBtn();
+        withdrawBtn();
+      }
+    }
+
 
     function turns(player) {
       "use strict";
@@ -88,5 +121,13 @@ define([
       if (player.finger !== api.finger) tip.html('------------ ' + getName(player) + '执子 ------------');
     }
 
-    return {init: init, chooseRole: chooseRole, restartBtn: restartBtn, giveUpBtn: giveUpBtn, turns: turns};
+    return {
+      init: init,
+      chooseRole: chooseRole,
+      restartBtn: restartBtn,
+      giveUpBtn: giveUpBtn,
+      withdrawBtn: withdrawBtn,
+      initChess: initChess,
+      turns: turns
+    };
   });

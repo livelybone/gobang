@@ -13,5 +13,15 @@ define(['utils/api'], function (api) {
     })
   }
 
-  return accept;
+  function refuse(opponentFinger, callback) {
+    api.post('/refuse', {opponentFinger: opponentFinger}, function (data, status, xhr) {
+      try {
+        if (callback) callback(data, status, xhr)
+      } catch (e) {
+        console.error(e);
+      }
+    })
+  }
+
+  return {accept: accept, refuse: refuse};
 });

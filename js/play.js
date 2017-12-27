@@ -104,6 +104,26 @@ define([
         }
       };
 
+      this.back = function (player) {
+        "use strict";
+        var backPlayer = player.finger === that.me ? that.me : that.opponent,
+          acceptPlayer = player.finger === that.me ? that.opponent : that.me;
+        if (backPlayer.pieces.piecesArr.length < 1) {
+          console.error('都没下棋，悔个毛线啊！');
+          return
+        }
+        var piece = backPlayer.pieces.piecesArr.pop();
+        piece.piece.remove();
+        chessboard.coordinates[piece.abscissa][piece.ordinate] = 0;
+        if (backPlayer.role === role.currentRole) {
+          // 如果悔棋的一方为当前棋手，则两方都各退一子
+          // 如果悔棋的一方不是当前棋手，则只退悔棋的棋手的子
+          var piece1 = acceptPlayer.pieces.piecesArr.pop();
+          piece1.piece.remove();
+          chessboard.coordinates[piece1.abscissa][piece1.ordinate] = 0;
+        }
+      };
+
       this.addClickFn = function () {
         chessboard.board.addEventListener('click', this.clickFn);
       };
@@ -147,9 +167,9 @@ define([
         return false;
       };
 
-      function toggle() {
+      function toggle(currentRole) {
         // 换手
-        role.currentRole = role.currentRole === role.black ? role.white : role.black;
+        role.currentRole = currentRole || (role.currentRole === role.black ? role.white : role.black);
       }
 
       function chessCallback(data) {
@@ -159,6 +179,8 @@ define([
           }
           that.addClickFn();
           btnTip.turns(that.me);
+          toggle(that.me.role);
+          if (that.players.black.pieces.piecesArr.length === 3) btnTip.initChess();
         } else {
           if (data.type === 'NORMAL') overlayTip.winOrNot(data.winner, data.winner.finger === api.finger);
           else overlayTip.giveUp(data.winner);
@@ -166,7 +188,7 @@ define([
           action.listenInvite(function (data) {
             "use strict";
             if (data.type === 'invite') {
-              overlay.renderOverlay(data.player);
+              overlay.inviteOverlay(data.player);
             }
           })
         }
@@ -174,6 +196,7 @@ define([
 
       function chessAction(chessboard, pos, role) {
         "use strict";
+        toggle(that.opponent.role);
         action.chess(chessboard, pos, role, function (data) {
           chessCallback(data);
         })

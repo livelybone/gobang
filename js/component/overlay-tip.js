@@ -11,6 +11,20 @@ define([
     'component/overlay',
   ],
   function (jquery, action, broadcast, getName, api, begin, overlay) {
+
+    function overlayTipHolder(tip) {
+      "use strict";
+      var overlayTip = $(
+        '<div id="overlay-tip">\n' +
+        '  <div class="float-win">\n' +
+        '    <h1 class="float-title" id="result">' + tip + '</h1>\n' +
+        '  </div>\n' +
+        '</div>'
+      );
+      $(document.body).append(overlayTip);
+      return overlayTip;
+    }
+
     function overlayTip(tip, btnText, win, finger) {
       "use strict";
       var overlayTip = $(
@@ -84,10 +98,12 @@ define([
     }
 
     return {
+      overlayTipHolder: overlayTipHolder,
       overlayTip: overlayTip,
       winOrNot: winOrNot,
       matchFailed: matchFailed,
       giveUp: giveUp,
       refuseGiveUp: refuseGiveUp
     };
-  });
+  })
+;
