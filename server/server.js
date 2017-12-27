@@ -10,6 +10,8 @@
 // inviteHandlers(用于监听我邀请的结果，可能有多个handler)
 // matchHandler(用于监听我匹配的结果)
 // listenInvitedHandler(用于监听其它玩家对我的邀请)
+// listenGiveUpHandler(用于监听对手的投降请求)
+// listenGiveUpResponseHandler(用于监听我的投降请求的结果)
 global['players'] = [];
 
 // 路由控制

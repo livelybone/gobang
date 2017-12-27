@@ -37,14 +37,15 @@ exports.controller = function (req, res) {
         pos: pos,
         gameOver: win,
         winner: win ? {finger: finger, role: me.role} : '',
-        role: role
+        role: role,
+        type: 'NORMAL'
       }));
-      initPlayer(opponent);
       if (!win) opponent.chessboard = chessboard;
+      else initPlayer(opponent);
 
       // 如果自己赢了，返回结果，否则不返回，给自己添加chessHandler，并保存棋盘
       if (win) {
-        res.end(JSON.stringify({gameOver: win, winner: win ? {finger: finger, role: me.role} : ''}));
+        res.end(JSON.stringify({gameOver: win, winner: win ? {finger: finger, role: me.role} : '', type: 'NORMAL'}));
         initPlayer(me);
       } else {
         me.chessHandler = {res: res};

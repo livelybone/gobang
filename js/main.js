@@ -36,10 +36,5 @@ require(['jquery', 'play', 'action/action', 'utils/api', 'component/overlay', 'c
         }
       })
     });
-
-    function accepted(opponent, myRole) {
-      chessboard.restart(myRole);
-      begin(myRole, opponent);
-    }
   });
 

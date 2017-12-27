@@ -3,7 +3,7 @@
  * Node Server
  */
 
-var getFinger = require('../utils/get-finger'), initPlayer = require('../utils/init-player');
+var getFinger = require('../utils/get-finger');
 
 exports.method = 'POST';
 exports.route = '/give-up';
@@ -17,15 +17,11 @@ exports.controller = function (req, res) {
         return player.opponent.finger === finger
       });
 
-    // 对方赢了
-    var res1 = opponent.chessHandler && opponent.chessHandler.res;
-    if (res1) res1.end(JSON.stringify({
-      gameOver: true,
-      winner: {finger: opponent.finger, role: opponent.role}
-    }));
-    initPlayer(opponent);
+    // 给对方发送请求
+    var res1 = opponent.listenGiveUpHandler && opponent.listenGiveUpHandler.res;
+    if (res1)
+      res1.end(JSON.stringify({gameOver: false, player: {finger: me.finger, role: me.role}}));
 
-    res.end(JSON.stringify({gameOver: true, winner: {finger: opponent.finger, role: opponent.role}}));
-    initPlayer(me);
+    me.listenGiveUpReponseHandler = {res: res};
   })
 };

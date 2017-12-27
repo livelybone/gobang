@@ -2,8 +2,20 @@
  * Created by Livelybone on 2017-12-17.
  */
 
-define(['utils/api', 'action/action', 'component/chessboard/chessboard', 'component/player/role', 'component/player/player', 'component/player/computer', 'component/chessboard/pop-up', 'utils/win-dictionary', 'component/overlay-tip'],
-  function (api, action, chessboard, role, Player, Computer, popup, winDictionary, overlayTip) {
+define([
+    'utils/api',
+    'action/action',
+    'component/chessboard/chessboard',
+    'component/player/role',
+    'component/player/player',
+    'component/player/computer',
+    'component/chessboard/pop-up',
+    'utils/win-dictionary',
+    'component/overlay-tip',
+    'component/overlay',
+    'component/game-button-tips',
+  ],
+  function (api, action, chessboard, role, Player, Computer, popup, winDictionary, overlayTip, overlay, btnTip) {
     function Play() {
       // 同步实现
 
@@ -18,6 +30,7 @@ define(['utils/api', 'action/action', 'component/chessboard/chessboard', 'compon
       this.init = function () {
         chessboard.init();
         popup.init();
+        btnTip.init();
       };
 
       this.gameStart = function (me, opponent) {
@@ -54,8 +67,7 @@ define(['utils/api', 'action/action', 'component/chessboard/chessboard', 'compon
 
       this.restart = function () {
         this.removeClickFn();
-        chessboard.init();
-        popup.init();
+        this.init();
         role.init();
         this.players = {};
         if (this.timmer) clearTimeout(this.timmer);
@@ -146,12 +158,15 @@ define(['utils/api', 'action/action', 'component/chessboard/chessboard', 'compon
             that.opponent.pieces.createPiece(data.pos);
           }
           that.addClickFn();
+          btnTip.turns(that.me);
         } else {
-          overlayTip.winOrNot(data.winner, data.winner.finger === api.finger);
+          if (data.type === 'NORMAL') overlayTip.winOrNot(data.winner, data.winner.finger === api.finger);
+          else overlayTip.giveUp(data.winner);
+
           action.listenInvite(function (data) {
             "use strict";
             if (data.type === 'invite') {
-              renderOverlay(data.player);
+              overlay.renderOverlay(data.player);
             }
           })
         }
