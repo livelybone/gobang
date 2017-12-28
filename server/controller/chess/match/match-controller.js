@@ -4,7 +4,7 @@
  */
 
 var getFinger = require('../../../utils/get-finger');
-var matchedDeal = require('./invite/accept-controller').matchedDeal;
+var matchedDeal = require('./accept-controller').matchedDeal;
 
 exports.method = 'POST';
 exports.route = '/match';
