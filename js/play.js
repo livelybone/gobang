@@ -11,11 +11,10 @@ define([
     'component/player/computer',
     'component/chessboard/pop-up',
     'utils/win-dictionary',
-    'component/overlay-tip',
     'component/overlay',
     'component/game-button-tips',
   ],
-  function (api, action, chessboard, role, Player, Computer, popup, winDictionary, overlayTip, overlay, btnTip) {
+  function (api, action, chessboard, role, Player, Computer, popup, winDictionary, overlay, btnTip) {
     function Play() {
       // 同步实现
 
@@ -67,7 +66,7 @@ define([
 
       this.gameOver = function () {
         // this.removeClickFn();
-        overlayTip.winOrNot(this.players[role.currentRole], !this.players[role.currentRole].isComputer)
+        overlay.winOrNot(this.players[role.currentRole], !this.players[role.currentRole].isComputer)
       };
 
       this.restart = function () {
@@ -194,8 +193,8 @@ define([
           if (that.players.black.pieces.piecesArr.length === 3) btnTip.initChess();
           that.toggle(that.me.role);
         } else {
-          if (data.type === 'NORMAL') overlayTip.winOrNot(data.winner, data.winner.finger === api.finger);
-          else overlayTip.giveUp(data.winner);
+          if (data.type === 'NORMAL') overlay.winOrNot(data.winner, data.winner.finger === api.finger);
+          else if (data.type === 'GIVEUP') overlay.giveUp(data.winner);
 
           action.listenInvite(function (data) {
             "use strict";

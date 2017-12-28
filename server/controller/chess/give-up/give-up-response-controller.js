@@ -10,7 +10,7 @@ exports.route = '/give-up/response';
 exports.controller = function (req, res) {
   "use strict";
   getData(req, function (data) {
-    var finger = data.finger, accept = data.accept;
+    var finger = data.data.finger, accept = data.data.accept;
 
     var me = players.find(function (player) {
         return player.finger === finger
@@ -27,8 +27,8 @@ exports.controller = function (req, res) {
 
       res.end(JSON.stringify({gameOver: true, winner: {finger: me.finger, role: me.role}, type: 'GIVEUP'}));
 
-      initPlayer(opponent);
-      initPlayer(me);
+      initPlayer.initPlayer(opponent);
+      initPlayer.initPlayer(me);
     } else {
       // 拒绝，继续游戏
       if (res1)

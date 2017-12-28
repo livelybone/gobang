@@ -12,8 +12,6 @@ exports.controller = function (req, res) {
     "use strict";
     if (players.length < 1) return;
 
-    console.log('withdraw-listen');
-
     // 刷新玩家的 listenWithdrawHandler
     players.find(function (player) {
       if (player.finger === finger) {

@@ -29,13 +29,14 @@ http.createServer(function (req, res) {
     'Access-Control-Allow-Origin': '*'
   });
 
-  console.log(url.pathname, req.method);
-  routes.find(function (route) {
+  console.log(req.method, url.pathname);
+  var route = routes.find(function (route) {
     if (url.pathname === route.route && req.method === route.method) {
       route.controller(req, res);
       return true;
     }
   });
+  if (!route) res.end(JSON.stringify({status: 404, errMsg: '路径错误!'}));
 }).listen(8080, function () {
   console.info('--------------Listening on port 8080--------------');
 }).on('error', function (e) {

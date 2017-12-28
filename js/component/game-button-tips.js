@@ -6,11 +6,10 @@ define([
     'component/start-game',
     'action/action',
     'utils/api',
-    'component/overlay-tip',
     'component/overlay',
     'utils/get-name',
   ],
-  function (jquery, begin, action, api, overlayTip, overlay, getName) {
+  function (jquery, begin, action, api, overlay, getName) {
     var btnGroup = $('#btn-group');
 
     function init() {
@@ -58,7 +57,7 @@ define([
       "use strict";
       var back = $('<button class="black">悔棋</button>');
       back.on('click', function () {
-        var overlayTipHolder = overlayTip.overlayTipHolder('等待对方回应...');
+        var overlayTipHolder = overlay.overlayTipHolder('等待对方回应...');
         action.withdraw(function (data) {
           if (data.accepted) {
             // 后退一步
@@ -82,9 +81,12 @@ define([
       "use strict";
       var giveUp = $('<button class="black">投降认输</button>');
       giveUp.on('click', function () {
+        var overlayTipHolder = overlay.overlayTipHolder('等待对方回应...');
         action.giveUp(function (data) {
+          overlayTipHolder.remove();
+
           if (data.gameOver) {
-            overlayTip.giveUp(data.winner);
+            overlay.giveUp(data.winner);
             window.chessboard.restart();
 
             action.listenInvite(function (data) {
@@ -94,7 +96,7 @@ define([
               }
             })
           } else {
-            overlayTip.refuseGiveUp(data.player);
+            overlay.refuseGiveUp(data.player);
           }
         })
       });

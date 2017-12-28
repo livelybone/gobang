@@ -12,7 +12,6 @@ exports.controller = function (req, res) {
   getData(req, function (data) {
     var finger = data.data.finger, accept = data.data.accept;
 
-    console.log('withdraw-response',accept);
     var me = players.find(function (player) {
         return player.finger === finger
       }),

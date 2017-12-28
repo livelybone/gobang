@@ -3,7 +3,7 @@
  * Node Server
  */
 
-var getData = require('../../../utils/get-data');
+var getData = require('../../../utils/get-data'), initPlayer = require('../../../utils/init-player');
 
 exports.method = 'POST';
 exports.route = '/accept';
@@ -53,32 +53,9 @@ function matched(me, opponent, myRes) {
     handler.res.end('chess');
   });
 
-  if (me.inviteHandlers) me.inviteHandlers.map(function (handler) {
-    // 结束handler
-    handler.res.end('chess')
-  });
-
   // 返回匹配结果
   myRes.end(JSON.stringify({opponent: {finger: opponent.finger, role: role[1]}, match: 'SUCCESS', role: role[0]}));
 
-
-  // 删除双方的inviteHandlers
-  opponent.inviteHandlers = null;
-  me.inviteHandlers = null;
-
-  // 删除双方的listenInvitedHandle
-  if (opponent.listenInvitedHandler && opponent.listenInvitedHandler.res)
-    opponent.listenInvitedHandler.res.end('chess');
-  if (me.listenInvitedHandler && me.listenInvitedHandler.res)
-    me.listenInvitedHandler.res.end('chess');
-  opponent.listenInvitedHandler = null;
-  me.listenInvitedHandler = null;
-
-  // 删除双方的matchHandler
-  if (opponent.matchHandler && opponent.matchHandler.res)
-    opponent.matchHandler.res.end('chess');
-  if (me.matchHandler && me.matchHandler.res)
-    me.matchHandler.res.end('chess');
-  opponent.matchHandler = null;
-  me.matchHandler = null;
+  initPlayer.initPlayerChess(opponent);
+  initPlayer.initPlayerChess(me);
 }
