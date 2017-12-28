@@ -19,6 +19,8 @@ exports.controller = function (req, res) {
         return player.opponent.finger === finger
       });
 
+    if (!me || !opponent) res.end(JSON.stringify({status: 400, errMsg: '不在对弈中'}));
+
     var res1 = opponent.listenGiveUpResponseHandler && opponent.listenGiveUpResponseHandler.res;
     if (accept) {
       // 接受，我赢了

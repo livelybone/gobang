@@ -20,6 +20,8 @@ exports.controller = function (req, res) {
         return player.finger === opponentFinger
       });
 
+    if (!me || !opponent) res.end(JSON.stringify({status: 400, errMsg: '不在对弈中'}));
+
     // 更新对方的inviteHandlers
     var inviteHandlers = opponent.inviteHandlers;
 

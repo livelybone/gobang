@@ -19,6 +19,8 @@ exports.controller = function (req, res) {
         return player.finger === opponentFinger
       });
 
+    if (!me || !opponent) res.end(JSON.stringify({status: 400, errMsg: '不在对弈中'}));
+
     if (opponent.opponent) {
       // 如果对方已匹配
       res.end(JSON.stringify({match: 'FAILED', msg: '已经开始游戏', opponent: {finger: opponent.finger}}))

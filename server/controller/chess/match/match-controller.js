@@ -18,6 +18,8 @@ exports.controller = function (req, res) {
         return player.matchHandler && player.matchHandler.res
       });
 
+    if (!me || !opponent) res.end(JSON.stringify({status: 400, errMsg: '不在对弈中'}));
+
     // 如果有正在匹配的玩家，则匹配成功，否则给自己添加matchHandler，等待其他玩家加入
     if (matches.length > 0) {
       matchedDeal(me, matches[0], res);

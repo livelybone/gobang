@@ -17,6 +17,8 @@ exports.controller = function (req, res) {
         return player.opponent.finger === finger
       });
 
+    if (!me || !opponent) res.end(JSON.stringify({status: 400, errMsg: '不在对弈中'}));
+
     // 给对方发送请求
     var res1 = opponent.listenGiveUpHandler && opponent.listenGiveUpHandler.res;
     if (res1)
