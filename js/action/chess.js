@@ -15,7 +15,7 @@ define(['utils/api'], function (api) {
         console.error(e);
       }
     }, function () {
-      chess(chessboard, pos, callback);
+      // chess(chessboard, pos, callback);
     })
   }
 

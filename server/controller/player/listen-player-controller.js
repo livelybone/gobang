@@ -3,21 +3,20 @@
  * Node Server
  */
 
-var getFinger = require('../utils/get-finger');
+var getFinger = require('../../utils/get-finger');
 
 exports.method = 'GET';
-exports.route = '/get/invite';
+exports.route = '/listen/players';
 exports.controller = function (req, res) {
-  "use strict";
   getFinger(req, function (finger) {
+    "use strict";
     if (players.length < 1) return;
-
-    // 给自己添加listenInvitedHandler
+    
+    // 刷新玩家的listenHandler
     players.find(function (player) {
       if (player.finger === finger) {
-        player.listenInvitedHandler = {res: res};
-        return true;
+        player.listenHandler = {res: res};
       }
     })
-  })
+  });
 };

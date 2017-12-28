@@ -3,7 +3,7 @@
  * Node Server
  */
 
-var getData = require('../utils/get-data');
+var getData = require('../../../utils/get-data');
 
 exports.method = 'POST';
 exports.route = '/invite';

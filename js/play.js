@@ -29,6 +29,7 @@ define([
 
       this.init = function () {
         chessboard.init();
+        role.init();
         popup.init();
         btnTip.init();
       };
@@ -53,9 +54,13 @@ define([
         else
           popup.animation('Game start!' + (currentPlayer.finger === api.finger ? '<br>You first!' : ''), 1000, function () {
             if (currentPlayer.finger !== api.finger) {
-              chessAction('', '', 'white');
+              that.chessAction('', '', 'white');
+              btnTip.btnGroup.empty();
+              btnTip.turns(that.opponent);
             } else {
               that.addClickFn();
+              btnTip.btnGroup.empty();
+              btnTip.turns(that.me);
             }
           })
       };
@@ -68,7 +73,6 @@ define([
       this.restart = function () {
         this.removeClickFn();
         this.init();
-        role.init();
         this.players = {};
         if (this.timmer) clearTimeout(this.timmer);
       };
@@ -97,7 +101,7 @@ define([
           else {
             // 双人对弈
             var piece = currentPlayer.pieces.piecesArr.slice(0).pop();
-            chessAction(chessboard.coordinates, {abscissa: piece.abscissa, ordinate: piece.ordinate}, that.me.role)
+            that.chessAction(chessboard.coordinates, {abscissa: piece.abscissa, ordinate: piece.ordinate}, that.me.role)
           }
         } else {
           that.addClickFn();
@@ -106,8 +110,8 @@ define([
 
       this.back = function (player) {
         "use strict";
-        var backPlayer = player.finger === that.me ? that.me : that.opponent,
-          acceptPlayer = player.finger === that.me ? that.opponent : that.me;
+        var backPlayer = player.finger === that.me.finger ? that.me : that.opponent,
+          acceptPlayer = player.finger === that.me.finger ? that.opponent : that.me;
         if (backPlayer.pieces.piecesArr.length < 1) {
           console.error('都没下棋，悔个毛线啊！');
           return
@@ -117,11 +121,15 @@ define([
         chessboard.coordinates[piece.abscissa][piece.ordinate] = 0;
         if (backPlayer.role === role.currentRole) {
           // 如果悔棋的一方为当前棋手，则两方都各退一子
-          // 如果悔棋的一方不是当前棋手，则只退悔棋的棋手的子
+          // 如果悔棋的一方不是当前棋手，则只退悔棋的棋手的子，并
           var piece1 = acceptPlayer.pieces.piecesArr.pop();
           piece1.piece.remove();
           chessboard.coordinates[piece1.abscissa][piece1.ordinate] = 0;
+        } else {
+          if (role.currentRole !== that.me.role) that.addClickFn();
+          else that.removeClickFn();
         }
+        that.toggle(backPlayer.role);
       };
 
       this.addClickFn = function () {
@@ -136,7 +144,7 @@ define([
         var rolePieces = this.players[role.currentRole].pieces.piecesArr;
         if (rolePieces.length < 5) {
           // 棋子少于5，不判断
-          toggle();
+          that.toggle();
           return false;
         }
         var currentPiece = rolePieces[rolePieces.length - 1];
@@ -163,24 +171,28 @@ define([
           this.gameOver();
           return true;
         }
-        toggle();
+        that.toggle();
         return false;
       };
 
-      function toggle(currentRole) {
+      this.toggle = function toggle(currentRole) {
         // 换手
         role.currentRole = currentRole || (role.currentRole === role.black ? role.white : role.black);
-      }
+        if (!that.opponent.isComputer) btnTip.turns(role.currentRole === that.me.role ? that.me : that.opponent);
+      };
 
-      function chessCallback(data) {
-        if (!data.gameOver) {
+      this.chessCallback = function chessCallback(data) {
+        if (data.type === 'WITHDRAW' && data.accepted) {
+          //如果是悔棋，则打印’我悔棋了‘
+          console.log('我悔棋了');
+        } else if (data.gameOver === false) {
           if (data.pos) {
             that.opponent.pieces.createPiece(data.pos);
           }
           that.addClickFn();
           btnTip.turns(that.me);
-          toggle(that.me.role);
           if (that.players.black.pieces.piecesArr.length === 3) btnTip.initChess();
+          that.toggle(that.me.role);
         } else {
           if (data.type === 'NORMAL') overlayTip.winOrNot(data.winner, data.winner.finger === api.finger);
           else overlayTip.giveUp(data.winner);
@@ -192,13 +204,13 @@ define([
             }
           })
         }
-      }
+      };
 
-      function chessAction(chessboard, pos, role) {
+      this.chessAction = function chessAction(chessboard, pos, role) {
         "use strict";
-        toggle(that.opponent.role);
+        this.toggle(that.opponent.role);
         action.chess(chessboard, pos, role, function (data) {
-          chessCallback(data);
+          that.chessCallback(data);
         })
       }
     }

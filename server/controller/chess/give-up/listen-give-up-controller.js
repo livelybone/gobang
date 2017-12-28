@@ -3,20 +3,21 @@
  * Node Server
  */
 
-var getFinger = require('../utils/get-finger');
+var getFinger = require('../../../utils/get-finger');
 
 exports.method = 'GET';
-exports.route = '/listen/players';
+exports.route = '/give-up/listen';
 exports.controller = function (req, res) {
+  "use strict";
   getFinger(req, function (finger) {
-    "use strict";
     if (players.length < 1) return;
-    
-    // 刷新玩家的listenHandler
+
+    // 给自己添加listenGiveUpHandler
     players.find(function (player) {
       if (player.finger === finger) {
-        player.listenHandler = {res: res};
+        player.listenGiveUpHandler = {res: res};
+        return true;
       }
     })
-  });
+  })
 };

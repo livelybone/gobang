@@ -3,7 +3,7 @@
  * Node Server
  */
 
-var getData = require('../utils/get-data'), initPlayer = require('../utils/init-player');
+var getData = require('../../../utils/get-data'), initPlayer = require('../../../utils/init-player');
 
 exports.method = 'POST';
 exports.route = '/give-up/response';

@@ -6,9 +6,11 @@ define([
     'action/action',
     'component/broadcast-animation',
     'utils/get-name',
-    'component/overlay-tip'
+    'component/overlay-tip',
+    'component/start-game',
+    'component/player/role',
   ],
-  function (jquery, action, broadcast, getName, overlayTip) {
+  function (jquery, action, broadcast, getName, overlayTip, begin, Role) {
     function renderOverlay(tip) {
       "use strict";
       var overlay = $(
@@ -87,7 +89,7 @@ define([
       var overlay = renderOverlay(tip);
       overlay.find('#refuse').bind('click', function () {
         action.withdrawAccept(false, function (data) {
-          if (data.accept === false) {
+          if (data.accepted === false) {
             // 重新建立监听悔棋的长轮询
             action.listenWithdraw(function (data2) {
               withdrawOverlay(data2.player);
@@ -97,14 +99,23 @@ define([
       });
       overlay.find('#accept').bind('click', function () {
         action.withdrawAccept(true, function (data) {
-          if (data.accept) {
+          if (data.accepted) {
+
+            // 如果悔棋方不是当前棋手，则当前棋手需要重新建立监听下棋的长轮询
+            var currentPlayer = window.chessboard.players[Role.currentRole];
+            if (player.finger !== currentPlayer.finger) {
+              action.chess('', '', Role.currentRole, function (data) {
+                window.chessboard.chessCallback(data);
+              })
+            }
+
             // 回退一步
             window.chessboard.back(data.player);
 
             // 重新建立监听悔棋的长轮询
             action.listenWithdraw(function (data2) {
               withdrawOverlay(data2.player);
-            })
+            });
           }
         });
       });

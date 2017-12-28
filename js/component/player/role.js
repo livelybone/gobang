@@ -9,6 +9,7 @@ define(function () {
 
     this.init = function () {
       this.currentRole = this.black;
+
     }
   }
 

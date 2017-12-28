@@ -17,7 +17,7 @@ define(['utils/api'], function (api) {
       }
     }, function (xhr, errorMsg, exception) {
       console.log(xhr, xhr.status, xhr.readyState, errorMsg, exception);
-      listenInvite(callback)
+      // listenInvite(callback)
     })
   }
 

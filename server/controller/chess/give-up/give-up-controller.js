@@ -3,10 +3,10 @@
  * Node Server
  */
 
-var getFinger = require('../utils/get-finger');
+var getFinger = require('../../../utils/get-finger');
 
 exports.method = 'POST';
-exports.route = '/withdraw';
+exports.route = '/give-up';
 exports.controller = function (req, res) {
   "use strict";
   getFinger(req, function (finger) {
@@ -18,13 +18,13 @@ exports.controller = function (req, res) {
       });
 
     // 给对方发送请求
-    var res1 = opponent.listenWithdrawHandler && opponent.listenWithdrawHandler.res;
+    var res1 = opponent.listenGiveUpHandler && opponent.listenGiveUpHandler.res;
     if (res1)
-      res1.end(JSON.stringify({type: 'GIVEUP', player: {finger: me.finger, role: me.role}}));
+      res1.end(JSON.stringify({gameOver: false, player: {finger: me.finger, role: me.role}}));
 
-    me.listenWithdrawResponseHandler = {res: res};
+    me.listenGiveUpResponseHandler = {res: res};
 
-    // 初始化 listenWithdrawHandler
-    opponent.listenWithdrawHandler = null;
+    // 初始化 listenGiveUpHandler
+    opponent.listenGiveUpHandler = null;
   })
 };

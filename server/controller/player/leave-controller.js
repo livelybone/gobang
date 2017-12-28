@@ -3,7 +3,7 @@
  * Node Server
  */
 
-var getFinger = require('../utils/get-finger');
+var getFinger = require('../../utils/get-finger');
 
 exports.method = 'GET';
 exports.route = '/leave';

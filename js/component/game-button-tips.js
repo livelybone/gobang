@@ -60,7 +60,7 @@ define([
       back.on('click', function () {
         var overlayTipHolder = overlayTip.overlayTipHolder('等待对方回应...');
         action.withdraw(function (data) {
-          if (data.accept) {
+          if (data.accepted) {
             // 后退一步
             overlayTipHolder.find('#result').html('对方同意了你的请求').fadeOut('fast', function () {
               window.chessboard.back(data.player);
@@ -114,15 +114,17 @@ define([
     function turns(player) {
       "use strict";
       var tip = $('#tip');
-      if (!tip) {
-        $('<span id="tip"></span>');
+      if (!tip[0]) {
+        tip = $('<span id="tip"></span>');
         btnGroup.append(tip);
       }
-      if (player.finger !== api.finger) tip.html('------------ ' + getName(player) + '执子 ------------');
+      if (player.finger !== api.finger) tip.html('------------ 我执' + (window.chessboard.me.role === 'black' ? '黑子' : '白子') + '，现在是' + getName(player) + '执子 ------------');
+      else tip.html('------------ 我执' + (window.chessboard.me.role === 'black' ? '黑子' : '白子') + '，现在是' + '我执子 ------------')
     }
 
     return {
       init: init,
+      btnGroup: btnGroup,
       chooseRole: chooseRole,
       restartBtn: restartBtn,
       giveUpBtn: giveUpBtn,
