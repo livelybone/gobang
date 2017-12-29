@@ -17,7 +17,12 @@ exports.controller = function (req, res) {
       var player2 = {finger: finger};
       players.map(function (p) {
         if (p.listenHandler) {
-          p.listenHandler.res.end(JSON.stringify({player: player2, refresh: true, enterOrLeave: 'enter'}))
+          p.listenHandler.res.end(JSON.stringify({
+            player: player2,
+            refresh: true,
+            enterOrLeave: 'enter',
+            type: 'ENTER'
+          }))
         }
       });
       players.push(player2);

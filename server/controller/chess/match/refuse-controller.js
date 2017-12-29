@@ -25,7 +25,7 @@ exports.controller = function (req, res) {
     // 更新对方的inviteHandlers
     var inviteHandlers = opponent.inviteHandlers;
 
-    inviteHandlers.find(function (handler, index) {
+    if (inviteHandlers) inviteHandlers.find(function (handler, index) {
       if (handler.opponentFinger === finger) {
         handler.res.end(JSON.stringify({opponent: {finger: finger}, match: 'REFUSE'}));
         inviteHandlers.splice(index, 1);

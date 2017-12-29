@@ -178,6 +178,7 @@ define([
         });
       }
       $(document.body).append(overlayTip);
+      return overlayTip;
     }
 
     function winOrNot(player, win) {
@@ -190,6 +191,16 @@ define([
       "use strict";
       var tip = getName(player) + '已经开始游戏了', btnText = '好吧，挺遗憾的！';
       overlayTip(tip, btnText);
+    }
+
+    function matchSuccess(player) {
+      "use strict";
+      var tip = '成功匹配到' + getName(player) + '，游戏开始！';
+      var $overlayTip = overlayTipHolder(tip);
+      setTimeout(function () {
+        $overlayTip.remove();
+        accepted(player, player.role);
+      }, 1000);
     }
 
     function giveUp(winner) {
@@ -232,6 +243,7 @@ define([
       overlayTip: overlayTip,
       winOrNot: winOrNot,
       matchFailed: matchFailed,
+      matchSuccess: matchSuccess,
       giveUp: giveUp,
       refuseGiveUp: refuseGiveUp
     };

@@ -5,7 +5,7 @@
 
 // 在服务器中的所有玩家，玩家属性：
 // name, finger(id), role(阵营), opponent(对手信息：name、finger、role), chessboard(棋盘，落子信息),
-// listenHandler(用于监听其他玩家的进出),
+// listenHandler(用于监听其他玩家的进出，或者匹配),
 // chessHandler(用于监听对手下棋),
 // inviteHandlers(用于监听我邀请的结果，可能有多个handler)
 // matchHandler(用于监听我匹配的结果)

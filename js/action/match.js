@@ -3,8 +3,8 @@
  */
 
 define(['utils/api'], function (api) {
-  function match(opponentFinger, callback) {
-    api.post('/match', {opponentFinger: opponentFinger}, function (data, status, xhr) {
+  function match(callback) {
+    api.post('/match', {}, function (data, status, xhr) {
       try {
         if (callback) callback(data, status, xhr)
       } catch (e) {

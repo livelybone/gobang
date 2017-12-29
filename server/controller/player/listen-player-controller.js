@@ -11,7 +11,7 @@ exports.controller = function (req, res) {
   getFinger(req, function (finger) {
     "use strict";
     if (players.length < 1) return;
-    
+
     // 刷新玩家的listenHandler
     players.find(function (player) {
       if (player.finger === finger) {

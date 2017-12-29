@@ -38,10 +38,18 @@ define([
         '</div>'
       );
       div.find('button.chess-btn').bind('click', function () {
-        action.invite(player.finger, function (data) {
-          if (data.match === 'REFUSE') broadcast.refused(data.opponent);
-          if (data.match === 'SUCCESS') overlay.accepted(data.opponent, data.role);
-        });
+        if (!isMe)
+          action.invite(player.finger, function (data) {
+            if (data.match === 'REFUSE') broadcast.refused(data.opponent);
+            if (data.match === 'SUCCESS') overlay.accepted(data.opponent, data.role);
+          });
+        else
+          action.match(function (data) {
+            "use strict";
+            if (data.match) {
+              overlay.matchSuccess(data.opponent);
+            }
+          })
       });
       $('#players').append(div);
     }

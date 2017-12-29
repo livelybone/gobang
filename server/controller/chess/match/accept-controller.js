@@ -45,9 +45,9 @@ function matched(me, opponent, myRes) {
   opponent.inviteHandlers.map(function (handler) {
     if (handler.opponentFinger === me.finger) {
       handler.res.end(JSON.stringify({
-        opponent: {finger: me.finger, role: role[0]},
+        opponent: {finger: me.finger, role: me.role},
         match: 'SUCCESS',
-        role: role[1]
+        role: opponent.role
       }));
       return true;
     }
@@ -56,8 +56,31 @@ function matched(me, opponent, myRes) {
   });
 
   // 返回匹配结果
-  myRes.end(JSON.stringify({opponent: {finger: opponent.finger, role: role[1]}, match: 'SUCCESS', role: role[0]}));
+  myRes.end(JSON.stringify({
+    opponent: {finger: opponent.finger, role: opponent.role},
+    match: 'SUCCESS',
+    role: me.role
+  }));
 
   initPlayer.initPlayerChess(opponent);
   initPlayer.initPlayerChess(me);
+
+  // 刷新所有玩家的列表
+  var p = players.filter(function (player) {
+    return !player.role
+  }).concat(players.filter(function (player) {
+    return player.role
+  })).map(function (player) {
+    return {
+      name: player.name,
+      finger: player.finger,
+      role: player.role,
+      isChess: !!player.role
+    }
+  });
+  // console.log(players.length, p);
+  p.map(function (player) {
+    "use strict";
+    if (player.listenHandler) player.listenHandler.res.end(JSON.stringify({players: p, type: 'MATCH'}));
+  });
 }
