@@ -16,6 +16,8 @@ define(['utils/api'], function (api) {
         console.error(e);
       }
     }, function (xhr, errorMsg, exception) {
+      // listenInvite(callback)
+    }, function(){
       listenInvite(callback)
     })
   }

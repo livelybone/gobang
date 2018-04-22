@@ -11,6 +11,8 @@ define(['utils/api'], function (api) {
         console.error(e);
       }
     }, function (xhr, errorMsg, exception) {
+      // giveUpListen(callback)
+    },function (xhr, errorMsg, exception) {
       giveUpListen(callback)
     })
   }

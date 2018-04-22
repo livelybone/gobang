@@ -15,6 +15,8 @@ define(['utils/api'], function (api) {
         console.error(e);
       }
     }, function (xhr, errorMsg, exception) {
+      // listenPlayer(callback)
+    }, function(){
       listenPlayer(callback)
     })
   }

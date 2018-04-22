@@ -16,27 +16,41 @@
 // listenWithdrawResponseHandler(用于监听我的悔棋请求的结果)
 global['players'] = [];
 
-// 路由控制
-global['routes'] = require('./controllers');
-
-var http = require('http'),
-  URL = require('url');
+const http = require('http'),
+  URL = require('url'),
+  routes = require('./controllers');// 路由控制
 
 http.createServer(function (req, res) {
-  var url = URL.parse(req.url, true);
-  res.writeHead(200, {
-    'Content-Type': 'text/plain;charset=utf-8',
-    'Access-Control-Allow-Origin': '*'
-  });
+  try{
+    const url = URL.parse(req.url, true);
+    res.writeHead(200, {
+      'Content-Type': 'text/plain;charset=utf-8',
+      'Access-Control-Allow-Origin': '*'
+    });
 
-  console.log(req.method, url.pathname);
-  var route = routes.find(function (route) {
-    if (url.pathname === route.route && req.method === route.method) {
-      route.controller(req, res);
-      return true;
-    }
-  });
-  if (!route) res.end(JSON.stringify({status: 404, errMsg: '路径错误!'}));
+    req.on('error', function (args) {
+      console.log(args);
+    });
+
+    req.on('aborted', function (args) {
+      req.destroy();
+      res.destroy();
+    });
+
+    console.log(req.method, url.pathname);
+    const route = routes.find(function (route) {
+      if (url.pathname === route.route && req.method === route.method) {
+        route.controller(req, res);
+        return true;
+      }
+    });
+    if (!route) res.end(JSON.stringify({status: 404, errMsg: '路径错误!'}));
+  }catch(e){
+    res.writeHead(500,{
+      'Access-Control-Allow-Origin': '*'
+    });
+    res.end(e.message);
+  }
 }).listen(8080, function () {
   console.info('--------------Listening on port 8080--------------');
 }).on('error', function (e) {
