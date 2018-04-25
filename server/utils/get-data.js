@@ -22,7 +22,7 @@ module.exports = function getData(req, callback) {
 
 function dataDeal(data) {
 
-  var reg = /(^{.*}$)|(^\[.*\]$)|(^true$)|(^false$)/;
+  var reg = /(^{.*}$)|(^\[.*]$)|(^true$)|(^false$)/;
   for (var key in data) {
     if (data.hasOwnProperty(key)) {
       try {

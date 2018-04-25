@@ -4,5 +4,4 @@
 
 define({
   backendUrl: 'http://192.168.16.223:8080',
-  requestTimeout: 1000*60
 });

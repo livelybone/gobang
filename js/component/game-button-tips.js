@@ -8,8 +8,8 @@ define([
     'utils/api',
     'component/overlay',
     'utils/get-name',
-  ],
-  function (jquery, begin, action, api, overlay, getName) {
+    'event-handler',
+  ], function (jquery, startGame, action, api, overlay, getName, handler) {
     var btnGroup = $('#btn-group');
 
     function init() {
@@ -27,11 +27,11 @@ define([
       btnGroup.empty();
       var black = $('<button class="black">我执黑子</button>'), white = $('<button class="white">我执白子</button>');
       black.on('click', function () {
-        begin('black');
+        startGame.begin('black');
         restartBtn();
       });
       white.on('click', function () {
-        begin('white');
+        startGame.begin('white');
         restartBtn();
       });
       btnGroup.append(black);
@@ -43,11 +43,11 @@ define([
       btnGroup.empty();
       var refresh = $('<button class="green">重新开始</button>'), giveUp = $('<button class="white">不玩了</button>');
       refresh.on('click', function () {
-        window.chessboard.restart();
+        window.chessboard.reInit();
         chooseRole();
       });
       giveUp.on('click', function () {
-        window.chessboard.restart();
+        window.chessboard.reInit();
       });
       btnGroup.append(refresh);
       btnGroup.append(giveUp);
@@ -57,21 +57,8 @@ define([
       "use strict";
       var back = $('<button class="black">悔棋</button>');
       back.on('click', function () {
-        var overlayTipHolder = overlay.overlayTipHolder('等待对方回应...');
-        action.withdraw(function (data) {
-          if (data.accepted) {
-            // 后退一步
-            overlayTipHolder.find('#result').html('对方同意了你的请求').fadeOut('fast', function () {
-              window.chessboard.back(data.player);
-              overlayTipHolder.remove();
-            })
-          } else {
-            // 继续游戏
-            overlayTipHolder.find('#result').html('对方拒绝了你的请求').fadeOut('fast', function () {
-              overlayTipHolder.remove();
-            })
-          }
-        })
+        overlay.overlayTipHolder('等待对方回应...');
+        action.withdraw(handler.withdrawHandler)
       });
       btnGroup.append(back);
     }
@@ -81,24 +68,8 @@ define([
       "use strict";
       var giveUp = $('<button class="black">投降认输</button>');
       giveUp.on('click', function () {
-        var overlayTipHolder = overlay.overlayTipHolder('等待对方回应...');
-        action.giveUp(function (data) {
-          overlayTipHolder.remove();
-
-          if (data.gameOver) {
-            overlay.giveUp(data.winner);
-            window.chessboard.restart();
-
-            action.listenInvite(function (data) {
-              "use strict";
-              if (data.type === 'invite') {
-                overlay.inviteOverlay(data.player);
-              }
-            })
-          } else {
-            overlay.refuseGiveUp(data.player);
-          }
-        })
+        overlay.overlayTipHolder('等待对方回应...');
+        action.giveUp(handler.giveUpHandler);
       });
       btnGroup.append(giveUp);
     }
@@ -134,4 +105,5 @@ define([
       initChess: initChess,
       turns: turns
     };
-  });
+  }
+);

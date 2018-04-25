@@ -17,5 +17,5 @@ define(['jquery', 'utils/api', 'utils/get-name'], function (jquery, api, getName
     window.chessboard.gameStart(roles.me, roles.opponent);
   }
 
-  return begin;
+  return {begin: begin};
 });

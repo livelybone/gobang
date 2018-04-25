@@ -22,7 +22,7 @@ exports.controller = function (req, res) {
     // 给对方发送请求
     var res1 = opponent.listenWithdrawHandler && opponent.listenWithdrawHandler.res;
     if (res1)
-      res1.end(JSON.stringify({type: 'GIVEUP', player: {finger: me.finger, role: me.role}}));
+      res1.end(JSON.stringify({type: 'WITHDRAW', player: {finger: me.finger, role: me.role}}));
 
     me.listenWithdrawResponseHandler = {res: res};
 

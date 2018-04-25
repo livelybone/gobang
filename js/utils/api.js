@@ -6,41 +6,59 @@ define(['config/config', 'jquery'], function (config, $) {
   function Api() {
     this.finger = getCookie('finger');
 
+    var that = this;
+
     if (!this.finger) {
       this.finger = new Date().getTime() + '' + Math.random().toFixed(5);
       setCookie('finger', this.finger);
     }
 
     this.errorFn = function (xhr, errorMsg, exception) {
-      console.error({xhr: xhr, errorMsg: errorMsg, exception: exception})
-    };
-    var that = this;
-
-    this.get = function get (url, body, callback, errorFn, timeoutFn) {
-      this.call('GET', url, body, callback, errorFn, timeoutFn);
+      console.error({xhr: xhr, errorMsg: errorMsg, exception: exception}, arguments)
     };
 
-    this.post = function post (url, body, callback, errorFn, timeoutFn) {
-      this.call('POST', url, body, callback, errorFn, timeoutFn);
+    this.get = function get(url, body, callback, errorFn) {
+      this.call('GET', url, body, callback, errorFn);
     };
 
-    this.call = function post (method, url, body, callback, errorFn, timeoutFn) {
+    this.post = function post(url, body, callback, errorFn) {
+      this.call('POST', url, body, callback, errorFn);
+    };
+
+    this.getLongPolling = function get(url, body, callback, errorFn) {
+      this.call('GET', url, body,
+        function (data, textStatus, jqXHR) {
+          if (data.type !== 'TIMEOUT' && callback) {
+            callback(data, textStatus, jqXHR);
+          }
+          that.getLongPolling(url, body, callback, errorFn);
+        },
+        errorFn
+      );
+    };
+
+    this.postLongPolling = function post(url, body, callback, errorFn) {
+      this.call('POST', url, body, function (data, textStatus, jqXHR) {
+          if (data.type !== 'TIMEOUT' && callback) {
+            callback(data, textStatus, jqXHR);
+          }
+          that.postLongPolling(url, body, callback, errorFn);
+        }, errorFn
+      );
+    };
+
+    this.call = function post(method, url, body, callback, errorFn) {
       var data = $.extend(body, {finger: this.finger});
       $.ajax({
         type: method,
         url: config.backendUrl + url,
         data: data,
-        timeout: config.requestTimeout,
         success: function (data, textStatus, jqXHR) {
-          if (callback) callback(parse(data));
+          if (callback) callback(parse(data), textStatus, jqXHR);
         },
         error: function (xhr, errorMsg, exception) {
-          if (errorMsg !== 'timeout') {
-            that.errorFn(xhr, errorMsg, exception);
-            if (errorFn) errorFn(xhr, errorMsg, exception);
-          } else {
-            if (timeoutFn) timeoutFn();
-          }
+          that.errorFn(xhr, errorMsg, exception);
+          if (errorFn) errorFn(xhr, errorMsg, exception);
         }
       });
     };

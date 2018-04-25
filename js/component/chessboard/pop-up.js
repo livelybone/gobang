@@ -4,42 +4,43 @@
 define(['component/chessboard/chessboard'], function (chessboard) {
   function Popup() {
     this.init = function () {
-      var floatWin = document.getElementById('game-tip');
-      if (!floatWin) {
-        floatWin = document.createElement('p');
-        floatWin.id = 'game-tip';
-        floatWin.style.display = 'flex';
-        floatWin.style.alignItems = 'center';
-        floatWin.style.justifyContent = 'center';
-        floatWin.style.position = 'absolute';
-        floatWin.style.left = '50%';
-        floatWin.style.top = '50%';
-        floatWin.style.zIndex = '100';
-        floatWin.style.width = '0';
-        floatWin.style.height = '140px';
-        floatWin.style.margin = '-70px 0 0 -150px';
-        floatWin.style.lineHeight = '36px';
-        floatWin.style.borderRadius = '10px';
-        floatWin.style.fontSize = '30px';
-        floatWin.style.color = '#666';
-        floatWin.style.textAlign = 'center';
-        floatWin.style.background = '#fff';
-        floatWin.style.boxShadow = '0 2px 10px rgba(0,0,0,.15)';
-        floatWin.style.transition = 'width .3s ease-out';
-        chessboard.board.appendChild(floatWin);
+      var floatWin = $('#game-tip');
+      if (!floatWin.length) {
+        floatWin = $('<p id="game-tip"></p>');
+        floatWin.css({
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'absolute',
+          left: '50%',
+          top: '50%',
+          zIndex: '100',
+          width: '0',
+          height: '140px',
+          margin: '-70px 0 0 -150px',
+          lineHeight: '36px',
+          borderRadius: '10px',
+          fontSize: '30px',
+          color: '#666',
+          textAlign: 'center',
+          background: '#fff',
+          boxShadow: '0 2px 10px rgba(0,0,0,.15)',
+          transition: 'width .3s ease-out'
+        });
+        chessboard.board.appendChild(floatWin[0]);
       }
     };
 
     this.animation = function (text, holdTime, callback) {
-      var floatWin = document.getElementById('game-tip');
-      floatWin.style.width = '300px';
+      var floatWin = $('#game-tip');
+      floatWin.css({width: '300px'});
 
       // callback hell, 还比较小应该没什么关系，后期可以改动
       setTimeout(function () {
-        floatWin.innerHTML = text;
+        floatWin.html(text);
         setTimeout(function () {
-          floatWin.style.width = '0';
-          floatWin.innerHTML = '';
+          floatWin.css({width: '0'});
+          floatWin.html('');
           setTimeout(function () {
             try {
               if (callback) callback();

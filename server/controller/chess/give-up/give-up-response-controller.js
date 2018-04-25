@@ -25,9 +25,9 @@ exports.controller = function (req, res) {
     if (accept) {
       // 接受，我赢了
       if (res1)
-        res1.end(JSON.stringify({gameOver: true, winner: {finger: me.finger, role: me.role}, type: 'GIVEUP'}));
+        res1.end(JSON.stringify({gameOver: true, winner: {finger: me.finger, role: me.role}, type: 'GIVE_UP'}));
 
-      res.end(JSON.stringify({gameOver: true, winner: {finger: me.finger, role: me.role}, type: 'GIVEUP'}));
+      res.end(JSON.stringify({gameOver: true, winner: {finger: me.finger, role: me.role}, type: 'GIVE_UP'}));
 
       initPlayer.initPlayer(opponent);
       initPlayer.initPlayer(me);

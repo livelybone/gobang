@@ -11,30 +11,29 @@ requirejs.onError = function err(error) {
   console.error(error);
 };
 
-require(['jquery', 'play', 'action/action', 'utils/api', 'component/overlay', 'component/broadcast-animation', 'component/playerList'],
-  function (jQuery, Play, action, api, overlay, broadcast, playerList) {
+require(['jquery', 'play', 'action/action', 'utils/api', 'event-handler', 'component/playerList', 'component/broadcast-animation'],
+  function (jQuery, Play, action, api, handler, playerList, broadcast) {
     console.log('jQuery version: ' + jQuery().jquery);
     window['finger'] = api.finger;
     window['chessboard'] = new Play();
     chessboard.init();
+    playerList.init('#players');
 
-    action.getPlayers(function (data, status, xhr) {
-      playerList.renderPlayerList(data.players);
+    // action.getPlayers(handler.getPlayersHandler);
 
-      action.listenPlayer(function (data) {
-        "use strict";
+    action.getPlayers(function (data) {
+      playerList.renderPlayerList('#players', data.players);
+
+      // 建立玩家变动的长轮询
+      action.listenPlayer(function listenPlayerHandler(data) {
         if (data) {
           broadcast.playerInOut(data.player, data.enterOrLeave);
-          if (data.refresh) playerList.renderPlayer(data.player);
+          if (data.refresh) playerList.renderPlayer('#players', data.player);
         }
       });
 
-      action.listenInvite(function (data) {
-        "use strict";
-        if (data.type === 'invite') {
-          overlay.inviteOverlay(data.player);
-        }
-      })
-    });
+      // 建立被邀请的长轮询
+      action.listenInvite(handler.listenInviteHandler)
+    })
   });
 

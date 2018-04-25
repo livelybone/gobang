@@ -13,8 +13,10 @@ define([
     'utils/win-dictionary',
     'component/overlay',
     'component/game-button-tips',
+    'event-handler',
+    'utils/get-name'
   ],
-  function (api, action, chessboard, role, Player, Computer, popup, winDictionary, overlay, btnTip) {
+  function (api, action, chessboard, role, Player, Computer, popup, winDictionary, overlay, btnTip, handler, getName) {
     function Play() {
       // 同步实现
 
@@ -25,6 +27,7 @@ define([
       this.me = null;
       this.opponent = null;
       this.timmer = null;
+      this.isChess = false;
 
       this.init = function () {
         chessboard.init();
@@ -35,6 +38,7 @@ define([
 
       this.gameStart = function (me, opponent) {
         // 初始化棋手
+        this.reInit();
         this.me = new Player(me.name, me.role, me.finger);
         this.opponent = opponent.isComputer ? new Computer(opponent.name, opponent.role) : new Player(opponent.name, opponent.role, opponent.finger);
         this.players.black = this.me.role === 'black' ? this.me : this.opponent;
@@ -42,34 +46,52 @@ define([
 
         var currentPlayer = this.players[role.currentRole];
 
-        if (opponent.isComputer)
-          popup.animation('Game start!' + (currentPlayer.finger === api.finger ? '<br>You first!' : ''), 1000, function () {
-            if (currentPlayer.isComputer) {
-              currentPlayer.chess();
-              that.judge();
-            }
+        if (opponent.isComputer) {
+          this.startWithComputer(currentPlayer);
+        } else {
+          this.startWithOther(currentPlayer);
+        }
+      };
+
+      this.startWithComputer = function (currentPlayer) {
+        popup.animation('Game start!' + (currentPlayer.finger === api.finger ? '<br>You first!' : ''), 1000, function () {
+          if (currentPlayer.isComputer) {
+            currentPlayer.chess();
+            that.judge();
+          }
+          that.addClickFn();
+        });
+      };
+
+      this.startWithOther = function (currentPlayer) {
+        that.isChess = true;
+        popup.animation('Game start!' + (currentPlayer.finger === api.finger ? '<br>You first!' : ''), 1000, function () {
+          if (currentPlayer.finger !== api.finger) {
+            that.chessAction('', '', 'white');
+            btnTip.btnGroup.empty();
+            btnTip.turns(that.opponent);
+          } else {
             that.addClickFn();
-          });
-        else
-          popup.animation('Game start!' + (currentPlayer.finger === api.finger ? '<br>You first!' : ''), 1000, function () {
-            if (currentPlayer.finger !== api.finger) {
-              that.chessAction('', '', 'white');
-              btnTip.btnGroup.empty();
-              btnTip.turns(that.opponent);
-            } else {
-              that.addClickFn();
-              btnTip.btnGroup.empty();
-              btnTip.turns(that.me);
-            }
-          })
+            btnTip.btnGroup.empty();
+            btnTip.turns(that.me);
+          }
+        })
       };
 
       this.gameOver = function () {
-        // this.removeClickFn();
-        overlay.winOrNot(this.players[role.currentRole], !this.players[role.currentRole].isComputer)
+        that.isChess = false;
+        var win = that.players[role.currentRole] === that.me;
+        overlay.overlayTip(win ? 'Wow，你居然赢了电脑！' : 'Awww，你被电脑虐成渣渣了！', '', '',
+          win ? {
+            text: '不服，再战！',
+            clickFn: function () {
+              btnTip.chooseRole();
+            }
+          } : ''
+        )
       };
 
-      this.restart = function () {
+      this.reInit = function () {
         this.removeClickFn();
         this.init();
         this.players = {};
@@ -139,7 +161,7 @@ define([
         chessboard.board.removeEventListener('click', this.clickFn);
       };
 
-      this.judge = function () {
+      this.judge = function () { // 人机对弈判断
         var rolePieces = this.players[role.currentRole].pieces.piecesArr;
         if (rolePieces.length < 5) {
           // 棋子少于5，不判断
@@ -180,7 +202,7 @@ define([
         if (!that.opponent.isComputer) btnTip.turns(role.currentRole === that.me.role ? that.me : that.opponent);
       };
 
-      this.chessCallback = function chessCallback(data) {
+      this.getChess = function getChess(data) {
         if (data.type === 'WITHDRAW' && data.accepted) {
           //如果是悔棋，则打印’我悔棋了‘
           console.log('我悔棋了');
@@ -193,15 +215,32 @@ define([
           if (that.players.black.pieces.piecesArr.length === 3) btnTip.initChess();
           that.toggle(that.me.role);
         } else {
-          if (data.type === 'NORMAL') overlay.winOrNot(data.winner, data.winner.finger === api.finger);
-          else if (data.type === 'GIVEUP') overlay.giveUp(data.winner);
+          var ListenInvite = function () {
+            // 重新建立监听对弈请求的长轮询
+            action.listenInvite(function (data) {
+              if (data.type === 'invite') {
+                overlay.renderOverlay(getName(data.player) + '邀请您对弈一局！', '', '', '', function () {
+                  action.invite(data.player.finger, handler.inviteHandler);
+                })
+              }
+            })
+          };
+          var overlayTip = function (tip, otherBtnText) {
+            overlay.overlayTip(tip, data.winner.finger === api.finger ? '朕知道了' : '确定', ListenInvite, {
+              text: otherBtnText,
+              clickFn: function () {
+                // 邀请再来一局
+                action.invite(that.opponent.finger, handler.inviteHandler)
+              }
+            })
+          };
 
-          action.listenInvite(function (data) {
-            "use strict";
-            if (data.type === 'invite') {
-              overlay.inviteOverlay(data.player);
-            }
-          })
+          if (data.type === 'NORMAL') {
+            overlayTip(data.winner.finger === api.finger ? '你赢啦！' : 'Awww，你被虐成渣渣了！', data.winner.finger === api.finger ? '再来一局！' : '不服，再战！');
+          }
+          else if (data.type === 'GIVE_UP') {
+            overlayTip(data.winner.finger === api.finger ? '对面投降，你赢啦！' : '对面接受了你的投降，你输了！', '再来一局！')
+          }
         }
       };
 
@@ -209,7 +248,7 @@ define([
         "use strict";
         this.toggle(that.opponent.role);
         action.chess(chessboard, pos, role, function (data) {
-          that.chessCallback(data);
+          action.getChess(that.getChess);
         })
       }
     }
