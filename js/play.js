@@ -66,8 +66,8 @@ define([
       this.startWithOther = function (currentPlayer) {
         that.isChess = true;
         popup.animation('Game start!' + (currentPlayer.finger === api.finger ? '<br>You first!' : ''), 1000, function () {
-          if (currentPlayer.finger !== api.finger) {
-            that.chessAction('', '', 'white');
+          if (currentPlayer.finger !== that.me.finger) {
+            action.getChess(that.getChess);
             btnTip.btnGroup.empty();
             btnTip.turns(that.opponent);
           } else {
@@ -82,7 +82,7 @@ define([
         that.isChess = false;
         var win = that.players[role.currentRole] === that.me;
         overlay.overlayTip(win ? 'Wow，你居然赢了电脑！' : 'Awww，你被电脑虐成渣渣了！', '', '',
-          win ? {
+          !win ? {
             text: '不服，再战！',
             clickFn: function () {
               btnTip.chooseRole();
@@ -121,7 +121,7 @@ define([
           }
           else {
             // 双人对弈
-            var piece = currentPlayer.pieces.piecesArr.slice(0).pop();
+            var piece = currentPlayer.pieces.piecesArr[currentPlayer.pieces.piecesArr.length - 1];
             that.chessAction(chessboard.coordinates, {abscissa: piece.abscissa, ordinate: piece.ordinate}, that.me.role)
           }
         } else {
@@ -130,7 +130,6 @@ define([
       };
 
       this.back = function (player) {
-        "use strict";
         var backPlayer = player.finger === that.me.finger ? that.me : that.opponent,
           acceptPlayer = player.finger === that.me.finger ? that.opponent : that.me;
         if (backPlayer.pieces.piecesArr.length < 1) {
@@ -142,13 +141,17 @@ define([
         chessboard.coordinates[piece.abscissa][piece.ordinate] = 0;
         if (backPlayer.role === role.currentRole) {
           // 如果悔棋的一方为当前棋手，则两方都各退一子
-          // 如果悔棋的一方不是当前棋手，则只退悔棋的棋手的子，并
+          // 如果悔棋的一方不是当前棋手，则只退悔棋的棋手的子，并重置棋手们相应的事件和监听
           var piece1 = acceptPlayer.pieces.piecesArr.pop();
           piece1.piece.remove();
           chessboard.coordinates[piece1.abscissa][piece1.ordinate] = 0;
         } else {
-          if (role.currentRole !== that.me.role) that.addClickFn();
-          else that.removeClickFn();
+          if (role.currentRole !== that.me.role) {
+            that.addClickFn();
+          } else {
+            that.removeClickFn();
+            action.getChess(that.getChess);
+          }
         }
         that.toggle(backPlayer.role);
       };
@@ -203,43 +206,33 @@ define([
       };
 
       this.getChess = function getChess(data) {
-        if (data.type === 'WITHDRAW' && data.accepted) {
-          //如果是悔棋，则打印’我悔棋了‘
-          console.log('我悔棋了');
-        } else if (data.gameOver === false) {
-          if (data.pos) {
-            that.opponent.pieces.createPiece(data.pos);
-          }
-          that.addClickFn();
-          btnTip.turns(that.me);
-          if (that.players.black.pieces.piecesArr.length === 3) btnTip.initChess();
-          that.toggle(that.me.role);
-        } else {
-          var ListenInvite = function () {
-            // 重新建立监听对弈请求的长轮询
-            action.listenInvite(function (data) {
-              if (data.type === 'invite') {
-                overlay.renderOverlay(getName(data.player) + '邀请您对弈一局！', '', '', '', function () {
-                  action.invite(data.player.finger, handler.inviteHandler);
-                })
-              }
-            })
-          };
-          var overlayTip = function (tip, otherBtnText) {
-            overlay.overlayTip(tip, data.winner.finger === api.finger ? '朕知道了' : '确定', ListenInvite, {
-              text: otherBtnText,
-              clickFn: function () {
-                // 邀请再来一局
-                action.invite(that.opponent.finger, handler.inviteHandler)
-              }
-            })
-          };
+        if (data.type !== 'CLOSE') {
+          if (data.type !== 'GAME_OVER') {
+            that.opponent.pieces.createPiece(data.data.pos);
+            that.addClickFn();
+            btnTip.turns(that.me);
+            if (that.players.black.pieces.piecesArr.length === 3) btnTip.initChess();
+            that.toggle(that.me.role);
+          } else {
+            that.opponent.pieces.createPiece(data.data.pos);
+            var isWinner = data.data.winner.finger === api.finger;
 
-          if (data.type === 'NORMAL') {
-            overlayTip(data.winner.finger === api.finger ? '你赢啦！' : 'Awww，你被虐成渣渣了！', data.winner.finger === api.finger ? '再来一局！' : '不服，再战！');
-          }
-          else if (data.type === 'GIVE_UP') {
-            overlayTip(data.winner.finger === api.finger ? '对面投降，你赢啦！' : '对面接受了你的投降，你输了！', '再来一局！')
+            // 重新建立监听对弈请求的长轮询
+            action.listenInvite(handler.listenInviteHandler);
+            btnTip.init();
+            window.chessboard.isChess = false;
+            overlay.overlayTip(
+              isWinner ? '你赢啦！' : 'Awww，你被虐成渣渣了！',
+              isWinner ? '朕知道了' : '确定',
+              '',
+              {
+                text: isWinner ? '再来一局！' : '不服，再战！',
+                clickFn: function () {
+                  // 邀请再来一局
+                  action.invite(that.opponent.finger, handler.inviteHandler);
+                }
+              }
+            )
           }
         }
       };
@@ -248,7 +241,21 @@ define([
         "use strict";
         this.toggle(that.opponent.role);
         action.chess(chessboard, pos, role, function (data) {
-          action.getChess(that.getChess);
+          if (data.type !== 'GAME_OVER') {
+            action.getChess(that.getChess);
+          } else {
+            // 重新建立监听玩家请求的长轮询
+            action.listenInvite(handler.listenInviteHandler);
+            btnTip.init();
+            window.chessboard.isChess = false;
+            overlay.overlayTip('你赢了！', '嗯， 知道了', '', {
+              text: '再来一局！',
+              clickFn: function () {
+                // 邀请再来一局
+                action.invite(that.opponent.finger, handler.inviteHandler);
+              }
+            });
+          }
         })
       }
     }

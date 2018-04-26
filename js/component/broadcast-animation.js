@@ -1,17 +1,33 @@
 /**
  * Created by Livelybone on 2017-12-17.
  */
-define(['jquery', 'utils/get-name'], function (jquery, getName) {
-  function broadcastAnimation(html) {
-    "use strict";
+define(['jquery', 'utils/get-name', 'utils/promise'], function (jquery, getName, promise) {
+  var msgPromise = null;
+
+  function animate(html, callback) {
     var broadcast = $('#broadcast');
-    broadcast.css({position: 'relative', top: '25px', opacity: 0});
+    broadcast.css({position: 'relative', top: '10px', opacity: 0});
     broadcast.html(html);
     broadcast.animate({top: 0, opacity: 1}, 'slow', function () {
       setTimeout(function () {
-        broadcast.animate({top: '-25px', opacity: 0})
+        broadcast.animate({top: '-10px', opacity: 0}, function () {
+          if (callback) callback();
+        })
       }, 1000);
     });
+  }
+
+  function broadcastAnimation(html) {
+    var fn = function () {
+      return new promise.MyPromise(function (res, rej) {
+        animate(html, res)
+      })
+    };
+    if (!msgPromise) {
+      msgPromise = fn();
+    } else {
+      msgPromise = msgPromise.then(fn);
+    }
   }
 
   function playerInOut(player, enterOrLeave) {

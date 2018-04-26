@@ -1,9 +1,8 @@
 define(['action/action', 'utils/get-name', 'component/overlay', 'component/start-game', 'component/broadcast-animation'],
   function (action, getName, overlay, startGame, broadcast) {
     function listenInviteHandler(data) {
-      "use strict";
-      if (data.type === 'invite') {
-        var player = data.player;
+      if (data.type === 'INVITE') {
+        var player = data.data.opponent;
         var tip = getName(player) + '邀请您对弈';
         overlay.renderOverlay(tip, '', '', function () {
           action.inviteRefuse(player.finger);
@@ -12,27 +11,27 @@ define(['action/action', 'utils/get-name', 'component/overlay', 'component/start
           action.listenInvite(listenInviteHandler);
         }, function () {
           action.inviteAccept(player.finger, function (data) {
-            if (data.match === 'FAILED') matchFailedHandler(data.opponent);
-            else if (data.match === 'SUCCESS') matchSuccessHandler(data.opponent, data.role);
+            if (data.type === 'MATCH_FAILED') matchFailedHandler(data.data.opponent);
+            else if (data.type === 'MATCH_SUCCESS') matchSuccessHandler(data.data.opponent, data.data.role);
           });
         });
       }
     }
 
     function inviteHandler(data) {
-      if (data.type === 'TIMEOUT') broadcast.inviteTimeout(data.opponent);
-      else if (data.match === 'REFUSE') broadcast.refused(data.opponent);
-      else if (data.match === 'SUCCESS') matchSuccessHandler(data.opponent, data.role);
+      if (data.type === 'TIMEOUT') broadcast.inviteTimeout();
+      else if (data.type === 'MATCH_REFUSE') broadcast.refused(data.data.opponent);
+      else if (data.type === 'MATCH_FAILED') matchFailedHandler(data.data.opponent);
+      else if (data.type === 'MATCH_SUCCESS') matchSuccessHandler(data.data.opponent, data.data.role);
     }
 
     function matchFailedHandler(opponent) {
-      "use strict";
       var tip = getName(opponent) + '已经开始游戏了', btnText = '好吧，挺遗憾的！';
       overlay.overlayTip(tip, btnText);
     }
 
     function matchSuccessHandler(opponent, myRole) {
-      window.chessboard.reInit(myRole);
+      window.chessboard.reInit();
       startGame.begin(myRole, opponent);
 
       // 建立监听玩家投降的长轮询
@@ -43,22 +42,23 @@ define(['action/action', 'utils/get-name', 'component/overlay', 'component/start
     }
 
     function listenGiveUpHandler(data) {
-      "use strict";
-      if (data.gameOver === false) {
-        var player = data.player;
+      if (data.type === 'GIVE_UP') {
+        var player = data.data.opponent;
         var tip = getName(player) + '向您投降了';
         overlay.renderOverlay(tip, '拒绝', '接受', function () {
           action.giveUpResponse(false, function (data) {
-            if (!data.gameOver) {
+            if (data.type !== 'GAME_OVER') {
               // 重新建立监听玩家投降的长轮询
               action.giveUpListen(listenGiveUpHandler);
             }
           });
         }, function () {
           action.giveUpResponse(true, function (data) {
-            if (data.gameOver) {
+            if (data.type === 'GAME_OVER') {
               overlay.overlayTip('你赢了！', '嗯， 知道了');
-              window.chessboard.reInit();
+              window.btnTip.init();
+              console.log(window.btnTip);
+              window.chessboard.isChess = false;
 
               // 重新建立监听玩家请求的长轮询
               action.listenInvite(listenInviteHandler)
@@ -73,24 +73,25 @@ define(['action/action', 'utils/get-name', 'component/overlay', 'component/start
       overlayTipHolder.remove();
       overlayTipHolder = null;
 
-      if (data.gameOver) {
+      if (data.type === 'GAME_OVER') {
         // 投降被接受
-        overlay.overlayTip(getName(data.winner) + '接受了你的投降', '嗯，我输了');
-        window.chessboard.reInit();
+        overlay.overlayTip(getName(data.data.winner) + '接受了你的投降', '嗯，我输了');
+        window.btnTip.init();
+        window.chessboard.isChess = false;
 
         action.listenInvite(listenInviteHandler)
       } else {
         // 投降被拒绝
         var tip, btnText;
-        tip = getName(data.player) + '拒绝了你的投降';
+        tip = getName(data.data.player) + '拒绝了你的投降';
         btnText = '好吧';
         overlay.overlayTip(tip, btnText);
       }
     }
 
     function listenWithDrawHandler(data) {
-      if (data.type === 'WITHDRAW' && data.player) {
-        var player = data.player;
+      if (data.type === 'WITHDRAW') {
+        var player = data.data.opponent;
         var tip = getName(player) + '想要悔棋，您接受吗？';
         overlay.renderOverlay(tip, '', '', function () {
           action.withdrawAccept(false, withdrawRefuseHandler);
@@ -102,10 +103,10 @@ define(['action/action', 'utils/get-name', 'component/overlay', 'component/start
 
     function withdrawHandler(data) {
       var overlayTipHolder = $("#overlay-tip-holder");
-      if (data.accepted) {
+      if (data.data.accepted) {
         // 后退一步
         overlayTipHolder.find('#result').html('对方同意了你的请求').fadeOut('fast', function () {
-          window.chessboard.back(data.player);
+          window.chessboard.back(data.data.player);
           overlayTipHolder.remove();
           overlayTipHolder = null;
         })
@@ -119,16 +120,16 @@ define(['action/action', 'utils/get-name', 'component/overlay', 'component/start
     }
 
     function withdrawRefuseHandler(data) {
-      if (data.accepted === false) {
+      if (data.data.accepted === false) {
         // 重新建立监听悔棋的长轮询
         action.listenWithdraw(listenWithDrawHandler)
       }
     }
 
     function withDrawAcceptHandler(data) {
-      if (data.accepted) {
+      if (data.data.accepted) {
         // 回退一步
-        window.chessboard.back(data.player);
+        window.chessboard.back(data.data.player);
 
         // 重新建立监听悔棋的长轮询
         action.listenWithdraw(listenWithDrawHandler);

@@ -14,7 +14,7 @@ define(['config/config', 'jquery'], function (config, $) {
     }
 
     this.errorFn = function (xhr, errorMsg, exception) {
-      console.error({xhr: xhr, errorMsg: errorMsg, exception: exception}, arguments)
+      console.error({xhr: xhr, errorMsg: errorMsg, exception: exception})
     };
 
     this.get = function get(url, body, callback, errorFn) {

@@ -35,13 +35,11 @@ define(['utils/api', 'component/overlay'], function (api, overlay) {
       } catch (e) {
         console.error(e);
       }
-    }, function (xhr, errorMsg, exception) {
-      if (window.chessboard.isChess && xhr.readyState === 4) chess(chessboard, pos, role, successFn);
     })
   }
 
   function getChess(successFn) {
-    api.get('/get/chess', {}, function (data, status, xhr) {
+    api.get('/chess/get', {}, function (data, status, xhr) {
       if (data.type === 'TIMEOUT' && window.chessboard.isChess) {
         getChess(successFn);
       } else if (successFn) successFn(data, status, xhr)
@@ -52,7 +50,7 @@ define(['utils/api', 'component/overlay'], function (api, overlay) {
 
   function listenWithdraw(successFn) {
     // 建立长轮询
-    api.get('/listen/withdraw', {}, function (data, status, xhr) {
+    api.get('/chess/withdraw/listen', {}, function (data, status, xhr) {
       try {
         if (data.type === 'TIMEOUT' && window.chessboard.isChess) {
           // 如果超时，则开再次请求
@@ -68,7 +66,7 @@ define(['utils/api', 'component/overlay'], function (api, overlay) {
 
 
   function withdraw(successFn) {
-    api.post('/withdraw', {}, function (data, status, xhr) {
+    api.post('/chess/withdraw', {}, function (data, status, xhr) {
       try {
         if (successFn) successFn(data, status, xhr)
       } catch (e) {
@@ -79,7 +77,7 @@ define(['utils/api', 'component/overlay'], function (api, overlay) {
 
   function withdrawResponse(accept, successFn) {
     "use strict";
-    api.post('/withdraw/response', {accept: accept}, function (data, status, xhr) {
+    api.post('/chess/withdraw/response', {accept: accept}, function (data, status, xhr) {
       try {
         if (successFn) successFn(data, status, xhr)
       } catch (e) {
@@ -89,7 +87,7 @@ define(['utils/api', 'component/overlay'], function (api, overlay) {
   }
 
   function giveUp(successFn) {
-    api.post('/give-up', {}, function (data, status, xhr) {
+    api.post('/chess/give-up', {}, function (data, status, xhr) {
       try {
         if (successFn) successFn(data, status, xhr)
       } catch (e) {
@@ -99,7 +97,7 @@ define(['utils/api', 'component/overlay'], function (api, overlay) {
   }
 
   function giveUpResponse(accept, successFn) {
-    api.post('/give-up/response', {accept: accept}, function (data, status, xhr) {
+    api.post('/chess/give-up/response', {accept: accept}, function (data, status, xhr) {
       try {
         if (successFn) successFn(data, status, xhr)
       } catch (e) {
@@ -109,7 +107,7 @@ define(['utils/api', 'component/overlay'], function (api, overlay) {
   }
 
   function giveUpListen(successFn) {
-    api.get('/give-up/listen', {}, function (data, status, xhr) {
+    api.get('/chess/give-up/listen', {}, function (data, status, xhr) {
       try {
         if (data.type === 'TIMEOUT' && window.chessboard.isChess) {
           // 如果超时，则开再次请求
@@ -124,7 +122,7 @@ define(['utils/api', 'component/overlay'], function (api, overlay) {
   }
 
   function invite(opponentFinger, successFn) {
-    api.post('/invite', {opponentFinger: opponentFinger}, function (data, status, xhr) {
+    api.post('/match/invite', {opponentFinger: opponentFinger}, function (data, status, xhr) {
       try {
         if (successFn) successFn(data, status, xhr)
       } catch (e) {
@@ -134,7 +132,7 @@ define(['utils/api', 'component/overlay'], function (api, overlay) {
   }
 
   function inviteAccept(opponentFinger, successFn) {
-    api.post('/accept', {opponentFinger: opponentFinger}, function (data, status, xhr) {
+    api.post('/match/invite/accept', {opponentFinger: opponentFinger}, function (data, status, xhr) {
       try {
         if (successFn) successFn(data, status, xhr)
       } catch (e) {
@@ -144,7 +142,7 @@ define(['utils/api', 'component/overlay'], function (api, overlay) {
   }
 
   function inviteRefuse(opponentFinger, successFn) {
-    api.post('/refuse', {opponentFinger: opponentFinger}, function (data, status, xhr) {
+    api.post('/match/invite/refuse', {opponentFinger: opponentFinger}, function (data, status, xhr) {
       try {
         if (successFn) successFn(data, status, xhr)
       } catch (e) {
@@ -155,16 +153,14 @@ define(['utils/api', 'component/overlay'], function (api, overlay) {
 
   function listenInvite(successFn) {
     // 建立长轮询
-    api.get('/get/invite', {}, function (data, status, xhr) {
+    api.get('/match/invite/get', {}, function (data, status, xhr) {
       try {
-        if (data.type === 'TIMEOUT' && window.chessboard.isChess) {
+        if (data.type === 'TIMEOUT' && !window.chessboard.isChess) {
           listenInvite(successFn);
         } else if (successFn) successFn(data, status, xhr);
       } catch (e) {
         console.error(e);
       }
-    }, function (xhr, errorMsg, exception) {
-      if (window.chessboard.isChess && xhr.readyState === 4) listenInvite(successFn);
     })
   }
 

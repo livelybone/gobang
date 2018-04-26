@@ -11,24 +11,35 @@ requirejs.onError = function err(error) {
   console.error(error);
 };
 
-require(['jquery', 'play', 'action/action', 'utils/api', 'event-handler', 'component/playerList', 'component/broadcast-animation'],
-  function (jQuery, Play, action, api, handler, playerList, broadcast) {
+require(['jquery', 'play', 'action/action', 'utils/api', 'event-handler', 'component/playerList', 'component/broadcast-animation', 'utils/compare-players', 'component/game-button-tips'],
+  function (jQuery, Play, action, api, handler, playerList, broadcast, comparePlayers, btnTip) {
     console.log('jQuery version: ' + jQuery().jquery);
     window['finger'] = api.finger;
     window['chessboard'] = new Play();
+    window['btnTip'] = btnTip;
     chessboard.init();
     playerList.init('#players');
 
     // action.getPlayers(handler.getPlayersHandler);
 
     action.getPlayers(function (data) {
-      playerList.renderPlayerList('#players', data.players);
+      playerList.Players = data.data.players;
+      playerList.renderPlayerList('#players', data.data.players);
 
       // 建立玩家变动的长轮询
       action.listenPlayer(function listenPlayerHandler(data) {
-        if (data) {
-          broadcast.playerInOut(data.player, data.enterOrLeave);
-          if (data.refresh) playerList.renderPlayer('#players', data.player);
+        if (data.type !== 'CLOSE') {
+          const players = comparePlayers(playerList.Players, data.data.players);
+          console.log(players);
+          players.forEach(function (player) {
+            if (player.enterOrLeave !== 'enter') {
+              $('#' + player.finger.replace('.', '')).remove();
+            } else {
+              playerList.renderPlayer('#players', player, player.finger === api.finger)
+            }
+            broadcast.playerInOut(player, player.enterOrLeave);
+          });
+          playerList.Players = data.data.players;
         }
       });
 

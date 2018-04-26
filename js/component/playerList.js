@@ -11,6 +11,8 @@ define([
     'event-handler'
   ],
   function (jquery, action, broadcast, overlay, startGame, getName, handler) {
+    var Players = [];
+
     function init(id) {
       $(id).append($(
         '<h1 class="title">玩家列表 <span id="broadcast"></span></h1>'
@@ -36,7 +38,7 @@ define([
 
     function renderPlayer(parentId, player, isMe) {
       var div = $(
-        '<div class="player">' +
+        '<div class="player" id="' + player.finger.replace('.', '') + '">' +
         '<h2 class="name">' +
         (isMe ? '我' : getName(player)) +
         '</h2>' +
@@ -46,17 +48,27 @@ define([
         '</div>'
       );
       div.find('button.chess-btn').bind('click', function () {
-        if (!isMe)
-          action.invite(player.finger, handler.inviteHandler);
-        else
-          action.match(function (data) {
-            if (data.match) {
-              handler.matchSuccessHandler(data.opponent, data.role);
-            }
+        if (!window.chessboard.isChess) {
+          if (!isMe) {
+            action.invite(player.finger, handler.inviteHandler);
+          } else {
+            action.match(function (data) {
+              if (data.match) {
+                handler.matchSuccessHandler(data.opponent, data.role);
+              }
+            })
+          }
+        } else {
+          var fn = function () {
+            $('#overlay-tip-holder').remove();
+          };
+          overlay.overlayTipHolder('请先完成本局比赛！', fn, function () {
+            setTimeout(fn, 1000);
           })
+        }
       });
       $(parentId).append(div);
     }
 
-    return {init:init, renderPlayerList: renderPlayerList, renderPlayer: renderPlayer};
+    return {Players: Players, init: init, renderPlayerList: renderPlayerList, renderPlayer: renderPlayer};
   });

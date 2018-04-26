@@ -3,12 +3,12 @@
  */
 
 function createWinDictionary() {
-  var winDictionary = [];
-  for (var abscissa = 0; abscissa < 15; abscissa++) {
-    for (var ordinate = 0; ordinate < 15; ordinate++) {
+  const winDictionary = [];
+  for (let abscissa = 0; abscissa < 15; abscissa++) {
+    for (let ordinate = 0; ordinate < 15; ordinate++) {
       if (abscissa < 11) {
         // 横排赢法
-        var groupAbscissa = [
+        const groupAbscissa = [
           {abscissa: abscissa, ordinate: ordinate},
           {abscissa: abscissa + 1, ordinate: ordinate},
           {abscissa: abscissa + 2, ordinate: ordinate},
@@ -20,7 +20,7 @@ function createWinDictionary() {
 
       if (ordinate < 11) {
         // 纵排赢法
-        var groupOrdinate = [
+        const groupOrdinate = [
           {abscissa: abscissa, ordinate: ordinate},
           {abscissa: abscissa, ordinate: ordinate + 1},
           {abscissa: abscissa, ordinate: ordinate + 2},
@@ -31,7 +31,7 @@ function createWinDictionary() {
 
         if (abscissa >= 4) {
           // 左斜线赢法
-          var groupDiagonalLeft = [
+          const groupDiagonalLeft = [
             {abscissa: abscissa, ordinate: ordinate},
             {abscissa: abscissa - 1, ordinate: ordinate + 1},
             {abscissa: abscissa - 2, ordinate: ordinate + 2},
@@ -43,7 +43,7 @@ function createWinDictionary() {
 
         if (abscissa < 11) {
           // 右斜线赢法
-          var groupDiagonalRight = [
+          const groupDiagonalRight = [
             {abscissa: abscissa, ordinate: ordinate},
             {abscissa: abscissa + 1, ordinate: ordinate + 1},
             {abscissa: abscissa + 2, ordinate: ordinate + 2},
