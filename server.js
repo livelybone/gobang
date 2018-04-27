@@ -26,6 +26,6 @@ http.createServer((req, res) => {
   console.error(e);
 });
 
-function render (src) {
+function render(src) {
   return fs.readFileSync(path.join(__dirname, src));
 }

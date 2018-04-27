@@ -2,9 +2,9 @@
   "name": "GoBang",
   "version": "0.0.1",
   "scripts": {
-    "start": "node ./start-all.js",
-    "client": "node ./server.js",
-    "server": "node ./server/server.js"
+    "start": "node ./start-all.js --host 0.0.0.0",
+    "client": "node ./server.js --host 0.0.0.0",
+    "server": "node ./server/server.js --host 0.0.0.0"
   },
   "dependencies": {}
 }
