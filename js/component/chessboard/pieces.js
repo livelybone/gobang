@@ -16,8 +16,7 @@ define(['component/chessboard/chessboard', 'component/chessboard/pop-up'], funct
         popup.animation("Don't play<br/>at the same place", 500);
         return false;
       }
-
-
+      
       var piece = document.createElement('img'), pos = this.coordinateConvertToPos(coordinate);
       piece.src = this.src;
       piece.style.position = 'absolute';

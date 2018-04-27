@@ -11,8 +11,8 @@ requirejs.onError = function err(error) {
   console.error(error);
 };
 
-require(['jquery', 'play', 'action/action', 'utils/api', 'event-handler', 'component/playerList', 'component/broadcast-animation', 'utils/compare-players', 'component/game-button-tips'],
-  function (jQuery, Play, action, api, handler, playerList, broadcast, comparePlayers, btnTip) {
+require(['jquery', 'play', 'action/action', 'utils/api', 'event-handler', 'component/playerList', 'component/broadcast-animation', 'utils/compare-players', 'component/game-button-tips', 'component/start-game'],
+  function (jQuery, Play, action, api, handler, playerList, broadcast, comparePlayers, btnTip, startGame) {
     console.log('jQuery version: ' + jQuery().jquery);
     window['finger'] = api.finger;
     window['chessboard'] = new Play();
@@ -24,14 +24,23 @@ require(['jquery', 'play', 'action/action', 'utils/api', 'event-handler', 'compo
 
     action.getPlayers(function (data) {
       playerList.Players = data.data.players;
-      playerList.renderPlayerList('#players', data.data.players);
+      playerList.renderPlayerList('#players', playerList.Players);
+
+      // 如果我还有未结束的棋局，则重置棋盘及相应事件
+      var me = playerList.Players.find(function (player) {
+        return player.finger === api.finger;
+      });
+      if (me && me.chessboard) {
+        var chessboard = me.chessboard;
+        startGame.replay(me.role, me.opponent, chessboard.chessboard, chessboard.nextRole)
+      }
 
       // 建立玩家变动的长轮询
       action.listenPlayer(function listenPlayerHandler(data) {
         if (data.type !== 'CLOSE') {
-          const players = comparePlayers(playerList.Players, data.data.players);
-          console.log(players);
-          players.forEach(function (player) {
+          var players = data.data.players;
+          var comparedPlayers = comparePlayers(playerList.Players, players);
+          comparedPlayers.forEach(function (player) {
             if (player.enterOrLeave !== 'enter') {
               $('#' + player.finger.replace('.', '')).remove();
             } else {

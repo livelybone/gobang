@@ -1,5 +1,5 @@
-define(['action/action', 'utils/get-name', 'component/overlay', 'component/start-game', 'component/broadcast-animation'],
-  function (action, getName, overlay, startGame, broadcast) {
+define(['action/action', 'utils/get-name', 'component/overlay', 'component/start-game', 'component/broadcast-animation', 'utils/api'],
+  function (action, getName, overlay, startGame, broadcast, api) {
     function listenInviteHandler(data) {
       if (data.type === 'INVITE') {
         var player = data.data.opponent;
@@ -33,6 +33,8 @@ define(['action/action', 'utils/get-name', 'component/overlay', 'component/start
     function matchSuccessHandler(opponent, myRole) {
       window.chessboard.reInit();
       startGame.begin(myRole, opponent);
+      $('#' + api.finger.replace('.', '') + ' .chess-btn').addClass('disable');
+      $('#' + opponent.finger.replace('.', '') + ' .chess-btn').addClass('disable');
 
       // 建立监听玩家投降的长轮询
       action.giveUpListen(listenGiveUpHandler);
@@ -78,6 +80,9 @@ define(['action/action', 'utils/get-name', 'component/overlay', 'component/start
         overlay.overlayTip(getName(data.data.winner) + '接受了你的投降', '嗯，我输了');
         window.btnTip.init();
         window.chessboard.isChess = false;
+
+        $('#' + api.finger.replace('.', '') + ' .chess-btn').removeClass('disable');
+        $('#' + data.data.winner.finger.replace('.', '') + ' .chess-btn').removeClass('disable');
 
         action.listenInvite(listenInviteHandler)
       } else {

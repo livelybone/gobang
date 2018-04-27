@@ -36,7 +36,7 @@ define([
         btnTip.init();
       };
 
-      this.gameStart = function (me, opponent) {
+      this.gameStart = function (me, opponent, isReplay) {
         // 初始化棋手
         this.reInit();
         this.me = new Player(me.name, me.role, me.finger);
@@ -44,13 +44,45 @@ define([
         this.players.black = this.me.role === 'black' ? this.me : this.opponent;
         this.players.white = this.me.role === 'white' ? this.me : this.opponent;
 
-        var currentPlayer = this.players[role.currentRole];
+        if (!isReplay) {
+          var currentPlayer = this.players[role.currentRole];
 
-        if (opponent.isComputer) {
-          this.startWithComputer(currentPlayer);
-        } else {
-          this.startWithOther(currentPlayer);
+          if (opponent.isComputer) {
+            this.startWithComputer(currentPlayer);
+          } else {
+            this.startWithOther(currentPlayer);
+          }
         }
+      };
+
+      this.gameReplay = function (me, opponent, chessboard, nextRole) {
+        this.gameStart(me, opponent, true);
+        chessboard.forEach(function (abs, i) {
+          abs.forEach(function (ord, j) {
+            if (ord && ord.indexOf(me.role) > -1) {
+              that.me.pieces.createPiece({abscissa: i, ordinate: j});
+            } else if (ord && ord.indexOf(opponent.role) > -1) {
+              that.opponent.pieces.createPiece({abscissa: i, ordinate: j});
+            }
+          })
+        });
+        // 建立 give-up, withdraw 监听
+        action.giveUpListen(handler.listenGiveUpHandler);
+        action.listenWithdraw(handler.listenWithDrawHandler);
+
+        action.getChess(that.getChess);
+        if (that.players.black.pieces.piecesArr.length >= 3) btnTip.initChess();
+
+        console.log(nextRole, me.role, opponent.role);
+        // 如果下棋手不是我，则添加 geChess 监听
+        if (nextRole !== me.role) {
+          btnTip.turns(that.opponent);
+          action.getChess(that.getChess);
+        } else { // 如果不是，则添加 click handler
+          btnTip.turns(that.me);
+          that.addClickFn();
+        }
+        that.toggle(nextRole);
       };
 
       this.startWithComputer = function (currentPlayer) {
@@ -88,7 +120,7 @@ define([
               btnTip.chooseRole();
             }
           } : ''
-        )
+        );
       };
 
       this.reInit = function () {
@@ -232,7 +264,10 @@ define([
                   action.invite(that.opponent.finger, handler.inviteHandler);
                 }
               }
-            )
+            );
+
+            $('#' + that.me.finger.replace('.', '') + ' .chess-btn').removeClass('disable');
+            $('#' + that.opponent.finger.replace('.', '') + ' .chess-btn').removeClass('disable');
           }
         }
       };
@@ -248,6 +283,7 @@ define([
             action.listenInvite(handler.listenInviteHandler);
             btnTip.init();
             window.chessboard.isChess = false;
+
             overlay.overlayTip('你赢了！', '嗯， 知道了', '', {
               text: '再来一局！',
               clickFn: function () {
@@ -255,6 +291,9 @@ define([
                 action.invite(that.opponent.finger, handler.inviteHandler);
               }
             });
+
+            $('#' + that.me.finger.replace('.', '') + ' .chess-btn').removeClass('disable');
+            $('#' + that.opponent.finger.replace('.', '') + ' .chess-btn').removeClass('disable');
           }
         })
       }

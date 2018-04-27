@@ -14,6 +14,7 @@ class Player {
     this.role = role;
     this.opponent = opponent; // (对手信息：name、finger、role)
     this.chessboard = chessboard; // (棋盘，落子信息)
+    this.isOnline = true;
     this.listenPlayersHandler = null; // (用于监听其他玩家的进出，或者匹配)
     this.listenInviteResponseHandlers = []; // (用于监听我邀请的结果，可能有多个handler)
     this.listenInvitedHandler = []; // (用于监听其它玩家对我的邀请
@@ -32,33 +33,48 @@ class Players {
   }
 
   getPlayers(finger = '') {
-    return this.players.map(player => ({
-      name: player.name,
-      finger: player.finger,
-      role: player.role,
-      chessboard: finger && finger === player.finger ? player.chessboard : null,
-      isChess: !!player.role,
-    }));
+    return this.players.filter(player => player.isOnline).map(player => ({
+        name: player.name,
+        finger: player.finger,
+        role: player.role,
+        chessboard: finger && finger === player.finger ? player.chessboard : null,
+        opponent: finger && finger === player.finger && player.opponent ? {
+          name: player.opponent.name,
+          finger: player.opponent.finger
+        } : null,
+        isChess: !!player.role,
+      }
+    ));
   }
 
-  add({name = '', finger, role = null, opponent = null, chessboard = null}) {
+  add({name = '', finger, role = null, opponent = null, chessboard = null}, res = null) {
     if (finger) {
-      this.players.push(new Player({name, finger, role, opponent, chessboard}));
+      const player = this.players.find(player => player.finger === finger);
+      if (player) {
+        player.isOnline = true;
+      } else {
+        this.players.push(new Player({name, finger, role, opponent, chessboard}));
+      }
       this.players.forEach(player => {
         if (player.listenPlayersHandler) {
-          player.listenPlayersHandler.res.end(resFormat({players: this.getPlayers()}, 'PLAYERS_ENTER'))
+          player.listenPlayersHandler.res.end(resFormat({players: this.getPlayers()}, 'PLAYERS'))
         }
-      })
+      });
+
+      if (res) {
+        res.end(resFormat({players: this.getPlayers(player ? finger : '')}, 'GET_PLAYERS'));
+      }
     }
   }
 
   del(finger) {
-    const index = Object.keys(this.players).find(key => this.players[key].finger === finger);
-    if (index !== undefined) {
-      this.players.splice(index, 1);
+    const player = this.players.find(player => player.finger === finger);
+    if (player) {
+      player.isOnline = false;
+      this.dealHandlers(finger);
       this.players.forEach(player => {
         if (player.listenPlayersHandler) {
-          player.listenPlayersHandler.res.end(resFormat({players: this.getPlayers()}, 'PLAYERS_LEAVE'))
+          player.listenPlayersHandler.res.end(resFormat({players: this.getPlayers()}, 'PLAYERS'))
         }
       })
     }
@@ -70,8 +86,13 @@ class Players {
   }
 
   initPlayer(finger) {
+    this.dealHandlers(finger);
     const index = Object.keys(this.players).find(key => this.players[key].finger === finger);
-    const player = this.players[index];
+    this.players[index] = new Player({finger, name: this.players[index].name})
+  }
+
+  dealHandlers(finger) {
+    const player = this.players.find(player => player.finger === finger);
     for (let key in player) {
       if (player.hasOwnProperty(key) && player[key]) {
         if (key.endsWith('Handler')) {
@@ -83,7 +104,6 @@ class Players {
         }
       }
     }
-    this.players[index] = new Player({finger, name: player.name})
   }
 
   startChess(fingers = [], callback) {

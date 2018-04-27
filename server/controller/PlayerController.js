@@ -12,13 +12,7 @@ class PlayerController {
 
   enter(req, res) {
     Utils.getFinger(req, finger => {
-      const player = Players.players.find(player => player.finger === finger);
-      if (player) {
-        res.end(resFormat({players: Players.getPlayers(finger)}, 'GET_PLAYERS'));
-      } else {
-        Players.add({finger});
-        res.end(resFormat({players: Players.getPlayers()}, 'GET_PLAYERS'));
-      }
+      Players.add({finger},res);
     }, e => errorFn(res, e));
   }
 
