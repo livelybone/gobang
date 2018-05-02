@@ -1,20 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>五子棋</title>
-  <link rel="shortcut icon" href="./images/chessboard.png">
-  <link rel="stylesheet" href="./css/index.css"/>
-  <script data-main="./js/main" src="./js/require.js"></script>
+    <meta charset="UTF-8">
+    <title>五子棋</title>
+    <link rel="shortcut icon" href="./images/chessboard.png">
+    <link rel="stylesheet" href="./css/index.css"/>
+    <!--<script data-main="./js/main" src="./js/require.js"></script>-->
+    <script src="./js/socket.io.dev.js"></script>
 </head>
 <body>
 <div class="container">
-  <div class="chess-room">
-    <div id="gobang"></div>
-    <div id="btn-group"></div>
-  </div>
-  <div id="players">
-  </div>
+    <div class="chess-room">
+        <div id="gobang"></div>
+        <div id="btn-group"></div>
+    </div>
+    <div id="players">
+    </div>
 </div>
+
+<script>
+  var ws = io.connect('http://127.0.0.1:8085');
+  ws.on('this', function (data) {
+    console.log(data);
+    ws.emit('private message', {data: '123'}, 'sdfs')
+  });
+  ws.on('user disconnected', function (data) {
+    console.log(data);
+  })
+</script>
 </body>
 </html>

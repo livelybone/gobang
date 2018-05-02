@@ -6,5 +6,7 @@
     "client": "node ./server.js --host 0.0.0.0",
     "server": "node ./server/server.js --host 0.0.0.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "socket.io": "^2.1.0"
+  }
 }
