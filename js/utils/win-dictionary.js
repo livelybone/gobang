@@ -2,6 +2,7 @@
  * Created by Livelybone on 2017-12-17.
  */
 define(function () {
+  // 计算整个棋盘的所有赢法
   function createWinDictionary() {
     var winDictionary = [];
     for (var abscissa = 0; abscissa < 15; abscissa++) {

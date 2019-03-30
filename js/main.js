@@ -1,4 +1,4 @@
-// 项目也没有特别复杂，就没有使用jQuery,react,angular2,vue框架了，使用了requireJS将js模块化
+// 项目也没有特别复杂，就没有使用 jQuery, react, angular2, vue 框架了，使用了 requireJS 将 js 模块化
 
 require.config({
   baseUrl: './js'
@@ -16,7 +16,7 @@ requirejs.onError = err;
 
 function begin(role) {
   var roles = [
-    {name: 'You', isComputer: false},
+    {name: 'You', isComputer: false},l
     {name: 'Computer', isComputer: true}
   ];
   var roleBlack = role === 'black' ? roles[0] : roles[1], roleWhite = role === 'white' ? roles[0] : roles[1];

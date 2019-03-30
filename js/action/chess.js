@@ -10,10 +10,14 @@ define(['component/chessboard', 'component/role', 'component/player', 'component
       // 绑定this;
       var that = this;
 
+      // 黑白两方
       this.players = {black: null, white: null};
 
+      // 初始化
       this.init = function () {
+        // 棋盘初始化
         chessboard.init();
+        // 弹框初始化
         popup.init();
       };
 
@@ -22,15 +26,20 @@ define(['component/chessboard', 'component/role', 'component/player', 'component
         this.players.white = roleWhite.isComputer ? new Computer(roleWhite.name, 'white') : new Player(roleWhite.name, 'white');
         this.players.black = roleBlack.isComputer ? new Computer(roleBlack.name, 'black') : new Player(roleBlack.name, 'black');
 
-        popup.animation('Game start!', 1000, function () {
-          var currentPlayer = that.players[role.currentPlayer];
+        // 弹窗结束时：绑定落棋事件；如果当前棋手为电脑，电脑下棋
+        popup.animation(
+          'Game start!',
+          1000,
+          function () {
+            var currentPlayer = that.players[role.currentPlayer];
 
-          if (currentPlayer.isComputer) {
-            currentPlayer.chess();
-            that.judge();
+            if (currentPlayer.isComputer) {
+              currentPlayer.chess();
+              that.judge();
+            }
+            that.addClickFn();
           }
-          that.addClickFn();
-        });
+        );
       };
 
       this.addClickFn = function () {

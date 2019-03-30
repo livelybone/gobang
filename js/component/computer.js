@@ -5,6 +5,7 @@ define(['component/player', 'component/chessboard', 'utils/win-dictionary', 'com
   function Computer(name, role) {
     // opponent: Player实例化对象
 
+    // 继承 Player 对象
     Player.apply(this, [name, role]);
 
     this.isComputer = true;
@@ -14,11 +15,15 @@ define(['component/player', 'component/chessboard', 'utils/win-dictionary', 'com
 
   Computer.prototype.constructor = Computer;
 
+  // 电脑下棋
   Computer.prototype.chess = function (callback) {
     var coordinate = this.computeCoordinate();
+
+    // 在棋盘上落子并计算输赢结果，如果有结果，表示没有下一步，返回 false; 无结果，表示继续下棋，返回 true
     var toNext = this.pieces.createPiece(coordinate);
     if (!toNext) return false;
 
+    // 更新棋盘权重，为下一次下棋做准备
     this.calcWeight(coordinate);
     try {
       if (callback) callback();
@@ -28,10 +33,10 @@ define(['component/player', 'component/chessboard', 'utils/win-dictionary', 'com
     return true;
   };
 
+  // 简单智能计算电脑落子的坐标，后期可以优化字典，利用权重提高AI水平
   Computer.prototype.computeCoordinate = function () {
     if (this.role === 'black' && this.pieces.piecesArr.length === 0) return {abscissa: 7, ordinate: 7};
 
-    // 简单智能计算电脑落子的坐标，后期可以优化字典，利用权重提高AI水平
     var myWeight = 0, opponentWeight = 0, my_abscissa = 0, my_ordinate = 0, opp_abscissa = 0, opp_ordinate = 0,
       myWeights = chessboard.winWeights[this.role],
       opponentWeights = chessboard.winWeights[this.role === Role.black ? Role.white : Role.black];
