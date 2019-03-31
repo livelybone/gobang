@@ -16,7 +16,7 @@ requirejs.onError = err;
 
 function begin(role) {
   var roles = [
-    {name: 'You', isComputer: false},l
+    {name: 'You', isComputer: false},
     {name: 'Computer', isComputer: true}
   ];
   var roleBlack = role === 'black' ? roles[0] : roles[1], roleWhite = role === 'white' ? roles[0] : roles[1];

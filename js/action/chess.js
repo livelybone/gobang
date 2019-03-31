@@ -17,7 +17,7 @@ define(['component/chessboard', 'component/role', 'component/player', 'component
       this.init = function () {
         // 棋盘初始化
         chessboard.init();
-        // 弹框初始化
+        // 弹框初始化s
         popup.init();
       };
 

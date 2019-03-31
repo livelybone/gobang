@@ -10,14 +10,18 @@ define(['component/chessboard', 'component/pop-up'], function (chessboard, popup
     // 棋子信息数组，元素属性：abscissa 横坐标，ordinate 纵坐标，piece 棋子dom元素
     this.piecesArr = [];
 
+    // 创建棋子，如果成功，返回 true，失败则返回 false
     this.createPiece = function createPiece(coordinate) {
-      //不能重复落子
+      // 不能重复落子
       if (chessboard.coordinates[coordinate.abscissa][coordinate.ordinate] !== 0) {
         popup.animation("Don't play<br/>at the same place", 500);
         return false;
       }
 
-      var piece = document.createElement('img'), pos = this.coordinateConvertToPos(coordinate);
+      // 创建棋子，并计算棋子的位置，通过 margin + position 定位
+      var piece = document.createElement('img'),
+        pos = this.coordinateConvertToPos(coordinate);
+
       piece.src = this.src;
       piece.style.position = 'absolute';
       piece.style.left = pos.left;
